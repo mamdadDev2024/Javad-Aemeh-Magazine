@@ -1,0 +1,89 @@
+@php
+    $articleTitle    = $article['title'] ?? '';
+    $articleAbstract = $article['abstract'] ?? '';
+    $articleAddOn    = $article['url'] ?? '';
+    $articleText     = $article['text'] ?? '';
+    $articleAuthor   = $article['author'] ?? '';
+@endphp
+
+<div class="article-form border rounded-md p-4 mb-4 bg-gray-100">
+    <h3 class="text-lg font-semibold mb-4">مقاله شماره {{ $index + 1 }}</h3>
+
+    <!-- عنوان مقاله -->
+    <div class="mb-4">
+        <input type="hidden" name="articles[{{ $index }}][id]" value="{{ $article->id ?? '' }}">
+        <label for="articles_{{ $index }}_title" class="block text-sm font-medium text-gray-700">عنوان مقاله</label>
+        <input
+            type="text"
+            name="articles[{{ $index }}][title]"
+            id="articles_{{ $index }}_title"
+            value="{{ old("articles.$index.title", $articleTitle) }}"
+            class="mt-1 block w-full border rounded-md p-2 @error("articles.$index.title") border-red-500 @enderror"
+        >
+        @error("articles.$index.title")
+            <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <!-- فایل مقاله -->
+    <div class="mb-6">
+        <label for="articles_{{ $index }}_pdf" class="block text-sm font-medium text-gray-700 dark:text-gray-300">فایل مقاله</label>
+        <input type="file" name="articles[{{ $index }}][addOn]" id="articles_{{ $index }}_pdf" accept=".docx,.pdf"
+               class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 dark:bg-gray-800 dark:text-white">
+        @if ($articleAddOn)
+            <input type="hidden" name="articles[{{ $index }}][existing_file]" value="{{ $articleAddOn }}">
+        @endif
+        @error("articles.$index.addOn")
+            <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <!-- نویسنده مقاله -->
+    <div class="mb-4">
+        <label for="articles_{{ $index }}_author" class="block text-sm font-medium text-gray-700">نویسنده مقاله</label>
+        <input
+            name="articles[{{ $index }}][author]"
+            id="articles_{{ $index }}_author"
+            class="mt-1 block w-full border rounded-md p-2 @error("articles.$index.author") border-red-500 @enderror"
+            value="{{ old("articles.$index.author", $articleAuthor) }}"
+        >
+        @error("articles.$index.author")
+            <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <!-- چکیده مقاله -->
+    <div class="mb-4">
+        <label for="articles_{{ $index }}_abstract" class="block text-sm font-medium text-gray-700">چکیده مقاله</label>
+        <textarea
+            name="articles[{{ $index }}][abstract]"
+            id="articles_{{ $index }}_abstract"
+            class="mt-1 block w-full border rounded-md p-2 @error("articles.$index.abstract") border-red-500 @enderror"
+            placeholder="چکیده مقاله را بنویسید"
+        >{{ old("articles.$index.abstract", $articleAbstract) }}</textarea>
+        @error("articles.$index.abstract")
+            <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <!-- متن مقاله -->
+    <div class="mb-4">
+        <label for="articles_{{ $index }}_text" class="block text-sm font-medium text-gray-700">متن مقاله</label>
+        <textarea
+            name="articles[{{ $index }}][text]"
+            id="articles_{{ $index }}_text"
+            class="mt-1 block h-36 w-full border rounded-md p-2 @error("articles.$index.text") border-red-500 @enderror"
+        >{{ old("articles.$index.text", $articleText) }}</textarea>
+        @error("articles.$index.text")
+            <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <button
+        type="button"
+        class="remove-article bg-red-500 text-white px-4 py-2 rounded"
+        onclick="this.closest('.article-form').remove();"
+    >
+        حذف مقاله
+    </button>
+</div>

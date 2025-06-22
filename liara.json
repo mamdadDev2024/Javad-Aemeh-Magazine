@@ -1,0 +1,10 @@
+{
+    "laravel": {
+    "composerMirror": false,
+    "phpVersion": "8.3",
+    "installDevDependencies": true,
+    "configCache": true,
+    "routeCache": true
+
+  }
+}

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Admin\UpdateSettingRequest;
+use App\Http\Requests\Admin\UpdateUserRoleStatusRequest;
 use App\Models\{Article, Category, Comment, Contact, Event, Khabar, Link, Magazine, Recommend, Role, Scope, Section, User};
 use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Illuminate\Http\Request;
@@ -18,18 +20,9 @@ class AdminController extends Controller
         ToastMagic::warning('انجام شد', 'حذف با موفقیت انجام شد!');
         return redirect()->back();
     }
-    public function updateAll(Request $request)
+    public function updateAll(UpdateSettingRequest $request)
     {
-        $request->validate([
-            'new_category' => 'nullable|string|max:255',
-            'new_scope' => 'nullable|string|max:255',
-            'sections.*' => 'nullable|string',
-            'linkName' => "nullable|string",
-            "link" => "nullable|string",
-            'titleHeader' => 'nullable|file|image|max:2048',
-            'defaultContentImage' => 'nullable|file|image|max:2048',
-            'titleFooter' => 'nullable|file|image|max:2048',
-        ]);
+        $request->validated();
 
         if ($request->filled('new_category')) {
             Category::create(['name' => $request->input('new_category')]);
@@ -69,18 +62,9 @@ class AdminController extends Controller
         return redirect()->back();
     }
 
-    public function updateUsers(Request $request)
+    public function updateUsers(UpdateUserRoleStatusRequest $request)
     {
-        $validated = $request->validate([
-            'g-recaptcha-response' => "required|captcha",
-            'statuses' => 'required|array',
-            'statuses.*' => 'required|in:0,1',
-            'roles' => 'required|array',
-            'roles.*' => 'required|exists:roles,id',
-        ], [
-            'statuses.*.in' => 'مقادیر وضعیت مورد قبول نیست',
-            'roles.*.exists' => 'مقام انتخاب شده در دسترس نیست',
-        ]);
+        $validated = $request->validated();
 
         try {
             foreach ($validated['statuses'] as $userId => $status) {
@@ -92,11 +76,12 @@ class AdminController extends Controller
                     $user->roles()->sync([$roleId]);
                 }
             }
-            ToastMagic::warning("انجام شد" , "تغییرات با موفقیت انجام شدند!");
+            ToastMagic::success("انجام شد" , "تغییرات با موفقیت انجام شدند!");
             return redirect()->route("admin.index_users");
         } catch (\Exception $e) {
             Log::error("Error updating users: " . $e->getMessage());
-            return redirect()->back()->with('error', 'An error occurred while updating users.');
+            ToastMagic::success("خطا!" , "عملیات انجام نشد. لطفا دوباره تلاش کنید.");
+            return redirect()->back();
         }
     }
 

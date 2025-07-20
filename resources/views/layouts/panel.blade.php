@@ -39,6 +39,7 @@
             100% { transform: rotate(360deg); }
         }
     </style>
+    {!! ToastMagic::styles() !!}
 </head>
 
 <body class="transition-colors font-vasir flex flex-col bg-gradient-to-b dark:from-slate-700 from-slate-200 dark:to-slate-800 to-slate-300">
@@ -75,6 +76,7 @@
             document.getElementById('overlay').classList.remove('hidden');
         });
     </script>
+    {!! ToastMagic::scripts() !!}
 </body>
 
 </html>

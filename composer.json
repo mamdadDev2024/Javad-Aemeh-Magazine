@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.2",
         "anhskohbo/no-captcha": "^3.6",
+        "devrabiul/laravel-toaster-magic": "^1.2",
         "jenssegers/agent": "^2.6",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
@@ -24,10 +25,7 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        },
-        "files": [
-            "app/Helpers/SweetAlert2.php"
-        ]
+        }
 
     },
     "autoload-dev": {

@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\Khabar;
 use App\Models\Magazine;
 use App\Models\Scope;
+use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -107,12 +108,12 @@ class WriterController extends Controller
             }
 
             DB::commit();
-            session()->flash("alert", SweetAlert2::alert("انجام شد", "نشریه با موفقیت ایجاد شد"));
+            ToastMagic::success("انجام شد", "نشریه با موفقیت ایجاد شد");
             return redirect()->route('home');
         } catch (\Throwable $th) {
             DB::rollBack();
             Log::error("Error creating magazine: {$th->getMessage()}");
-            session()->flash("alert", SweetAlert2::alert("خطا", "مشکلی پیش آمد. لطفا بعدا تلاش کنید.", "error"));
+            ToastMagic::success("خطا", "مشکلی پیش آمد. لطفا بعدا تلاش کنید.");
             return redirect()->back()->withInput();
         }
     }
@@ -155,11 +156,11 @@ class WriterController extends Controller
                 "user_id" => Auth::id()
             ]);
 
-            session()->flash("alert", SweetAlert2::alert("انجام شد", "خبر مورد نظر با موفقیت ثبت شد"));
+            ToastMagic::success("انجام شد", "خبر مورد نظر با موفقیت ثبت شد");
             return redirect()->back();
         } catch (\Throwable $th) {
             Log::error("Error while creating news: " . $th);
-            session()->flash("alert", SweetAlert2::alert("انجام نشد", "متاسفانه در پردازشات مشکلی به وجود آمد لطفا بعدا امتحان کنید", "error"));
+            ToastMagic::success("انجام نشد", "متاسفانه در پردازشات مشکلی به وجود آمد لطفا بعدا امتحان کنید");
             return redirect()->back();
         }
     }
@@ -186,11 +187,11 @@ class WriterController extends Controller
                 "slug" => Str::slug($data["title"]),
                 "image" => $imagePath,
             ]);
-            session()->flash("alert", SweetAlert2::alert("انجام شد", "رویداد مورد نظر با موفقیت ثبت شد"));
+            ToastMagic::success("انجام شد", "رویداد مورد نظر با موفقیت ثبت شد");
             return redirect()->back();
         } catch (\Throwable $th) {
             Log::error("Error while creating event: " . $th);
-            session()->flash("alert", SweetAlert2::alert("انجام نشد", "متاسفانه در پردازشات مشکلی به وجود آمد لطفا بعدا امتحان کنید", "error"));
+            ToastMagic::success("انجام نشد", "متاسفانه در پردازشات مشکلی به وجود آمد لطفا بعدا امتحان کنید");
             return redirect()->back();
         }
     }
@@ -253,12 +254,12 @@ class WriterController extends Controller
             $this->syncCategories($data['category'] ?? [], $magazine);
             $this->syncArticles($request , $data['articles'] ?? [], $magazine);
             DB::commit();
-            session()->flash("alert", SweetAlert2::alert("انجام شد", "نشریه با موفقیت به‌روزرسانی شد"));
+            ToastMagic::success("انجام شد", "نشریه با موفقیت به‌روزرسانی شد");
             return redirect()->route('home');
         } catch (\Throwable $th) {
             DB::rollBack();
             Log::error("Error updating magazine: {$th->getMessage()}");
-            session()->flash("alert", SweetAlert2::alert("خطا", "مشکلی پیش آمد. لطفا بعدا تلاش کنید.", "error"));
+            ToastMagic::success("خطا", "مشکلی پیش آمد. لطفا بعدا تلاش کنید.");
             return redirect()->back()->withInput();
         }
     }
@@ -342,11 +343,11 @@ class WriterController extends Controller
             }
 
             $instance->save();
-            session()->flash("alert", SweetAlert2::alert("انجام شد", __("types.$type")." مورد نظر با موفقیت به‌روزرسانی شد"));
+            ToastMagic::success("انجام شد", __("types.$type")." مورد نظر با موفقیت به‌روزرسانی شد");
             return redirect()->route('home');
         } catch (\Throwable $th) {
             Log::error("Error updating {$type}: {$th->getMessage()}");
-            session()->flash("alert", SweetAlert2::alert("خطا", "مشکلی پیش آمد. لطفا بعدا تلاش کنید.", "error"));
+            ToastMagic::success("خطا", "مشکلی پیش آمد. لطفا بعدا تلاش کنید.");
             return redirect()->back()->withInput();
         }
     }
@@ -357,10 +358,10 @@ class WriterController extends Controller
         $user = Auth::user();
         if ($content && ($content->user_id == $user->id || $user->hasRole("admin|super admin"))) {
             $content->delete();
-            session()->flash("alert", SweetAlert2::alert("حذف شد", "محتوای مورد نظر حذف شد"));
+            ToastMagic::success("حذف شد", "محتوای مورد نظر حذف شد");
             return redirect()->back();
         } else {
-            session()->flash("alert", SweetAlert2::alert("عملیات شکست خورد", "حذف انجام نشد", "error"));
+            ToastMagic::success("عملیات شکست خورد", "حذف انجام نشد");
             return redirect()->back();
         }
     }

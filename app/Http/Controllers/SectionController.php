@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\SweetAlert2;
 use App\Models\Section;
+use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -38,18 +39,18 @@ class SectionController extends Controller
 
             $section->save();
             Log::info('Section updated successfully', ['section_name' => $name]);
-            session()->flash("alert", SweetAlert2::alert("انجام شد", "قسمت مورد نظر تغییر کرد!"));
+            ToastMagic::success("انجام شد", "قسمت مورد نظر تغییر کرد!");
             return back();
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::warning('Validation failed for section update', [
                 'section_name' => $name,
                 'errors' => $e->errors(),
             ]);
-            session()->flash("alert", SweetAlert2::alert("خطا", "اعتبارسنجی ناموفق بود", "error"));
+            ToastMagic::error("خطا", "اعتبارسنجی ناموفق بود", "error");
             return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
             Log::error('Section update failed: ' . $e->getMessage(), ['section_name' => $name]);
-            session()->flash("alert", SweetAlert2::alert("خطا", "مشکلی پیش آمد", "error"));
+            ToastMagic::error("خطا", "مشکلی پیش آمد", "error");
             return back();
         }
     }

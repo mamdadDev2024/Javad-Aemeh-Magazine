@@ -20,6 +20,7 @@ return new class extends Migration
                 $table->text("abstract");
                 $table->foreignId("magazine_id")->constrained("magazines")->cascadeOnDelete();
                 $table->timestamps();
+                $table->text("url")->nullable();
         });
     }
 

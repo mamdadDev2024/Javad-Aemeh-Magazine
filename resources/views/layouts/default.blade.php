@@ -42,15 +42,13 @@
             100% { transform: rotate(360deg); }
         }
     </style>
+    {!! ToastMagic::styles() !!}
 </head>
 
 <body class="transition-all duration-200 font-vasir flex flex-col bg-gradient-to-b dark:from-slate-700 from-slate-200 dark:to-slate-800 to-slate-300">
     <x-header/>
     @yield('body')
     <x-footer />
-    <script>
-        AOS.init();
-    </script>
     <script>
         window.addEventListener('scroll', function () {
             const header = document.getElementById('header');
@@ -63,32 +61,7 @@
     </script>
 
     @yield('scripts')
-    @if (session('alert'))
-        @php
-            $icon = session('alert.icon', 'error');
-            $text = session('alert.text', 'خطای نامشخص');
-        @endphp
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                Toastify({
-                    text: `{{ $icon === 'success' ? '✅' : '' }}{{ $text }}`,
-                    duration: 5000,
-                    close: true,
-                    gravity: "top",
-                    position: "right",
-                    stopOnFocus: true,
-                    style: {
-                        background: "{{ $icon === 'success' ? 'linear-gradient(to right, #28a745, #5bc0de)' : 'linear-gradient(to right, #dc3545, #ffc107)' }}",
-                        borderRadius: "8px",
-                        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                        padding: "12px 20px",
-                        color: "#fff",
-                        fontSize: "14px"
-                    },
-                }).showToast();
-            });
-        </script>
-    @endif
+
     <div id="overlay" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
         <div class="loader"></div>
     </div>
@@ -97,6 +70,7 @@
             document.getElementById('overlay').classList.remove('hidden');
         });
     </script>
+    {!! ToastMagic::scripts() !!}
 </body>
 
 </html>

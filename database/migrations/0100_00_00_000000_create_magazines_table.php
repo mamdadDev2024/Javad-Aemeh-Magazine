@@ -11,7 +11,7 @@ class CreateMagazinesTable extends Migration
             $table->id();
             $table->string('title');
             $table->string('slug');
-            $table->text('desc');
+            $table->text('body');
             $table->text('image');
             $table->string('pdf')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');

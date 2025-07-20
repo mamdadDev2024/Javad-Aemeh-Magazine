@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Khabar;
 use App\Models\Event;
 use App\Models\Magazine;
+use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -44,7 +45,7 @@ class ShowController extends Controller
                 ])
                 ->first();
             if (!$article) {
-                session()->flash('alert', SweetAlert2::alert('موجود نیست!', 'شاید آدرسو اشتباه رفتی!', 'error'));
+                ToastMagic::error('موجود نیست!', 'شاید آدرسو اشتباه رفتی!');
                 return redirect()->back();
             }
 
@@ -64,7 +65,7 @@ class ShowController extends Controller
             return view('show.ArticleShow', compact('article', 'relateds', 'type'));
         } catch (\Throwable $th) {
             Log::error("Error in show logic for {$type}: " . $th->getMessage());
-            session()->flash('alert', SweetAlert2::alert('موجود نیست!', 'شاید آدرسو اشتباه رفتی!', 'error'));
+            ToastMagic::error('موجود نیست!', 'شاید آدرسو اشتباه رفتی!');
             return redirect()->back();
         }
     }
@@ -81,7 +82,7 @@ class ShowController extends Controller
                 ])
                 ->first();
             if (!$item) {
-                session()->flash('alert', SweetAlert2::alert('موجود نیست!', 'شاید آدرسو اشتباه رفتی!', 'error'));
+                ToastMagic::error('موجود نیست!', 'شاید آدرسو اشتباه رفتی!');
                 return redirect()->back();
             }
 
@@ -101,7 +102,7 @@ class ShowController extends Controller
             return view('show.ContentShow', compact('item', 'relateds', 'type' , "categories"));
         } catch (\Throwable $th) {
             Log::error("Error in show logic for {$type}: " . $th->getMessage());
-            session()->flash('alert', SweetAlert2::alert('موجود نیست!', 'شاید آدرسو اشتباه رفتی!', 'error'));
+            ToastMagic::error('موجود نیست!', 'شاید آدرسو اشتباه رفتی!');
             return redirect()->back();
         }
     }
@@ -120,7 +121,7 @@ class ShowController extends Controller
                 ->first();
 
             if (!$magazine) {
-                session()->flash('alert', SweetAlert2::alert('موجود نیست!', 'شاید آدرسو اشتباه رفتی!', 'error'));
+                ToastMagic::error('موجود نیست!', 'شاید آدرسو اشتباه رفتی!');
                 return redirect()->back();
             }
 
@@ -139,7 +140,7 @@ class ShowController extends Controller
             return view('show.MagazineShow', compact('magazine', 'relateds', 'type' , "categories"));
         } catch (\Throwable $th) {
             Log::error("Error in show logic for {$type}: " . $th->getMessage());
-            session()->flash('alert', SweetAlert2::alert('موجود نیست!', 'شاید آدرسو اشتباه رفتی!', 'error'));
+            ToastMagic::error('موجود نیست!', 'شاید آدرسو اشتباه رفتی!');
             return redirect()->back();
         }
     }

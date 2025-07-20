@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\SweetAlert2;
 use App\Models\Article;
 use App\Models\Event;
 use App\Models\Khabar;
 use App\Models\Magazine;
-use Illuminate\Http\Request;
+use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -18,7 +17,7 @@ class LikeController extends Controller
         try {
             $user = Auth::user();
             if (!$user) {
-                return $this->flashAlertAndRedirect("احراز هویت", "اول وارد حساب شوید", "error");
+                return ToastMagic::success("احراز هویت", "اول وارد حساب شوید");
             }
 
             $model = match ($type) {
@@ -30,7 +29,7 @@ class LikeController extends Controller
             };
 
             if (!$model) {
-                return $this->flashAlertAndRedirect("خطا", "نوع محتوا نامعتبر است", "error");
+                return ToastMagic::error("خطا", "نوع محتوا نامعتبر است");
             }
 
             $content = $model::findOrFail($id);
@@ -40,19 +39,14 @@ class LikeController extends Controller
                 ? "با موفقیت انجام شد"
                 : "لایک شما حذف شد";
 
-            return $this->flashAlertAndRedirect("انجام شد", $message , "success");
+            return ToastMagic::success("انجام شد", $message , "success");
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return $this->flashAlertAndRedirect("خطا", "محتوای مورد نظر یافت نشد", "error");
+            return ToastMagic::error("خطا", "محتوای مورد نظر یافت نشد");
 
         } catch (\Throwable $th) {
             Log::error("Error in toggleLike for {$type}: " . $th->getMessage());
-            return $this->flashAlertAndRedirect("خطا", "مشکلی در پردازش درخواست شما رخ داد", "error");
+            return ToastMagic::error("خطا", "مشکلی در پردازش درخواست شما رخ داد");
         }
-    }
-    private function flashAlertAndRedirect(string $title, string $message, string $type = null)
-    {
-        session()->flash("alert", SweetAlert2::alert($title, $message, $type));
-        return back();
     }
 }

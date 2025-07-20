@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\SweetAlert2;
 use App\Models\{Article, Category, Comment, Contact, Event, Khabar, Link, Magazine, Recommend, Role, Scope, Section, User};
+use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Auth, Log, Validator};
 
@@ -15,7 +15,7 @@ class AdminController extends Controller
         ]);
         $link = Link::find($data["id"]);
         $link->delete();
-        session()->flash("alert", SweetAlert2::alert('انجام شد', 'حذف با موفقیت انجام شد!'));
+        ToastMagic::warning('انجام شد', 'حذف با موفقیت انجام شد!');
         return redirect()->back();
     }
     public function updateAll(Request $request)
@@ -65,7 +65,7 @@ class AdminController extends Controller
                 "link" => $request["link"]
             ]);
         }
-        session()->flash("alert", SweetAlert2::alert('انجام شد', 'تغییرات با موفقیت ذخیره شد.'));
+        ToastMagic::warning('انجام شد', 'تغییرات با موفقیت ذخیره شد.');
         return redirect()->back();
     }
 
@@ -92,7 +92,7 @@ class AdminController extends Controller
                     $user->roles()->sync([$roleId]);
                 }
             }
-            session()->flash("alert", SweetAlert2::alert("انجام شد" , "تغییرات با موفقیت انجام شدند!"));
+            ToastMagic::warning("انجام شد" , "تغییرات با موفقیت انجام شدند!");
             return redirect()->route("admin.index_users");
         } catch (\Exception $e) {
             Log::error("Error updating users: " . $e->getMessage());
@@ -296,7 +296,7 @@ class AdminController extends Controller
     }
     protected function setFlashMessage($title, $message, $type = 'success')
     {
-        session()->flash('alert', SweetAlert2::alert($title, $message, $type));
+        ToastMagic::warning($title, $message, $type);
         return back();
     }
     public function createScope(Request $request)

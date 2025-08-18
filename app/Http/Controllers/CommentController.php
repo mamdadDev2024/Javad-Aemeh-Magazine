@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\SweetAlert2;
+use App\Http\Requests\Comment\CreateCommentRequest;
 use App\Models\Article;
 use App\Models\Event;
 use App\Models\Khabar;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 
 class CommentController extends Controller
 {
-    public function createComment(Request $request , $model , $contentId)
+    public function __invoke(CreateCommentRequest $request , $model , $contentId)
     {
         $data = $request->validated();
         $classModel = "App\\Models\\$model";
@@ -21,13 +22,13 @@ class CommentController extends Controller
         $model = $model->find($contentId);
         try {
             $model->comments()->create([
-                "text" => $data["text"],
+                "body" => $data["body"],
                 "user_id" => Auth::id()
             ]);
-            return ToastMagic::success("نظر شما ثبت شد", "منتظر تایید باشید" , "success");
+            return ToastMagic::success("نظر شما ثبت شد", "منتظر تایید باشید");
         } catch (\Throwable $th) {
             Log::error("Error creating comment: " . $th->getMessage());
-            return ToastMagic::error("مشکلی پیش آمده", "در صورتی که شرایط عادی است به ادمین گزارش دهید", "error");
+            return ToastMagic::error("مشکلی پیش آمده", "در صورتی که شرایط عادی است به ادمین گزارش دهید");
         }
     }
 }

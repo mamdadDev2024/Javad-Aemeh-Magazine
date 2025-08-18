@@ -23,8 +23,8 @@
                 @foreach ($notConfirmedComments as $comment)
                     <tr>
                         <td class="border border-gray-300 p-2">{{ $comment->user->username }}</td>
-                        <td class="border border-gray-300 p-2">{{ $comment->commentable->title }}</td>
-                        <td class="border border-gray-300 p-2">{{ $comment->text }}</td>
+                        <td class="border border-gray-300 p-2"><a href='{{ route($comment->commentable_type.".show" , $comment->commentable->slug) }}'></a>{{ $comment->commentable->title }}</td>
+                        <td class="border border-gray-300 p-2">{{ $comment->body }}</td>
                         <td class="border border-gray-300 p-2">{{ Illuminate\Support\Carbon::parse($comment->created_at)->diffForHumans() }}</td>
                         <td class="border border-gray-300 p-2">
                             <form action="{{route("admin.comment.accept" , $comment->id)}}" method="post">

@@ -48,24 +48,6 @@ class MainController extends Controller
         return $items;
     }
 
-    public function download(Request $request)
-    {
-        $path = $request->input("url");
-
-        try {
-            if ($path) {
-                return Storage::exists($path) ?: Storage::download($path);
-            }
-
-            ToastMagic::error("انجام نشد", "فایل موجود نیست");
-            return back();
-
-        } catch (\Exception $e) {
-            Log::error('Download error: ' . $e->getMessage());
-            ToastMagic::error("انجام نشد", "مشکلی در فرآیند بارگیری پیش آمد");
-            return back();
-        }
-    }
 
 
 

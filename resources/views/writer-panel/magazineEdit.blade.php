@@ -2,24 +2,6 @@
 
 @section('title', 'ویرایش نشریه')
 
-{{-- بخش استایل اختصاصی برای انیمیشن اسپینر --}}
-@section('styles')
-<style>
-  .loader {
-    border: 8px solid #f3f3f3; /* رنگ زمینه‌ی نوارهای بیرونی */
-    border-top: 8px solid #3490dc; /* رنگ قسمت بالا (که انیمیشنی چرخشی به نظر می‌رسد) */
-    border-radius: 50%;
-    width: 80px;
-    height: 80px;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-</style>
-@endsection
 
 @section('body')
 
@@ -44,11 +26,11 @@
 
         <!-- توضیحات نشریه -->
         <div class="mb-6">
-            <label for="desc" class="block text-sm font-medium text-gray-700 dark:text-gray-300">توضیحات نشریه</label>
-            <input type="text" name="desc" id="desc" value="{{ old('desc', $Magazine->body) }}"
-                   class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-white @error('desc') border-red-500 @enderror"
+            <label for="body" class="block text-sm font-medium text-gray-700 dark:text-gray-300">توضیحات نشریه</label>
+            <input type="text" name="body" id="body" value="{{ old('body', $Magazine->body) }}"
+                   class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-white @error('body') border-red-500 @enderror"
                    required>
-            @error('desc')
+            @error('body')
                 <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
             @enderror
         </div>
@@ -56,7 +38,7 @@
         <!-- تصویر نشریه -->
         <div class="mb-6">
             <label for="image" class="block text-sm font-medium text-gray-700 dark:text-gray-300">تصویر نشریه</label>
-            <input type="file" name="image" id="image" accept="image/jpg, image/jpeg"
+            <input type="file" name="image" id="image" accept="image/"
                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 dark:bg-gray-800 dark:text-white">
             @if ($Magazine->image)
                 <img src="{{ asset($Magazine->image) }}" alt="تصویر فعلی" class="mt-2 w-24 h-24 rounded-lg">
@@ -69,7 +51,7 @@
         <!-- فایل ضمیمه نشریه -->
         <div class="mb-6">
             <label for="addOn" class="block text-sm font-medium text-gray-700 dark:text-gray-300">فایل ضمیمه نشریه</label>
-            <input type="file" name="addOn" id="addOn" accept=".docx,.pdf"
+            <input type="file" name="addOn" id="addOn" accept="application/pdf"
                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 dark:bg-gray-800 dark:text-white">
             @if ($Magazine->pdf)
                 <a href="{{ route('download', ["url" => $Magazine->pdf]) }}"
@@ -141,32 +123,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const articlesContainer = document.getElementById('articles-container');
 
     addArticleButton.addEventListener('click', () => {
-        // محاسبه اندیس جدید براساس تعداد فرم‌های موجود
         const newIndex = articlesContainer.querySelectorAll('.article-form').length;
 
         const template = `
-            <div class="article-form border rounded-md p-4 mb-4 bg-gray-100">
-                <h3 class="text-lg font-semibold mb-4">مقاله شماره ${newIndex + 1}</h3>
+            <div class="article-form border rounded-md p-4 mb-4 bg-gray-100 dark:bg-gray-800">
+                <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">مقاله شماره ${newIndex + 1}</h3>
+                
                 <div class="mb-4">
                     <input type="hidden" name="articles[${newIndex}][id]" value="">
-                    <label for="articles_${newIndex}_title" class="block text-sm font-medium text-gray-700">عنوان مقاله</label>
-                    <input type="text" name="articles[${newIndex}][title]" id="articles_${newIndex}_title" class="mt-1 block w-full border rounded-md p-2">
+                    <label for="articles_${newIndex}_title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">عنوان مقاله</label>
+                    <input type="text" name="articles[${newIndex}][title]" id="articles_${newIndex}_title"
+                        class="mt-1 block w-full border rounded-md p-2 border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white">
                 </div>
+                
                 <div class="mb-4">
-                    <label for="articles_${newIndex}_abstract" class="block text-sm font-medium text-gray-700">چکیده مقاله</label>
-                    <textarea name="articles[${newIndex}][abstract]" id="articles_${newIndex}_abstract" class="mt-1 block w-full border rounded-md p-2" placeholder="چکیده مقاله را بنویسید"></textarea>
+                    <label for="articles_${newIndex}_abstract" class="block text-sm font-medium text-gray-700 dark:text-gray-300">چکیده مقاله</label>
+                    <textarea name="articles[${newIndex}][abstract]" id="articles_${newIndex}_abstract"
+                        class="mt-1 block w-full border rounded-md p-2 border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white"
+                        placeholder="چکیده مقاله را بنویسید"></textarea>
                 </div>
+
                 <div class="mb-4">
-                    <label for="articles_${newIndex}_text" class="block text-sm font-medium text-gray-700">متن مقاله</label>
-                    <textarea name="articles[${newIndex}][text]" id="articles_${newIndex}_text" class="mt-1 block w-full border rounded-md p-2"></textarea>
+                    <label for="articles_${newIndex}_text" class="block text-sm font-medium text-gray-700 dark:text-gray-300">متن مقاله</label>
+                    <textarea name="articles[${newIndex}][text]" id="articles_${newIndex}_text"
+                        class="mt-1 block w-full h-36 border rounded-md p-2 border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white"></textarea>
                 </div>
-                <button type="button" class="remove-article bg-red-500 text-white px-4 py-2 rounded" onclick="this.closest('.article-form').remove();">
+
+                <button type="button"
+                    class="remove-article bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+                    onclick="this.closest('.article-form').remove();">
                     حذف مقاله
                 </button>
             </div>
         `;
+
         articlesContainer.insertAdjacentHTML('beforeend', template);
     });
 });
+
 </script>
 @endsection

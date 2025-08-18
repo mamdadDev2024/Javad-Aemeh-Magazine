@@ -23,7 +23,7 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'g-recaptcha-response' => 'required|captcha',
+            // 'g-recaptcha-response' => 'required|captcha',
             "email" => "nullable|email|unique:users,email," . Auth::id(),
             "age" => "nullable|numeric",
             "name" => "nullable|min:4|max:40",

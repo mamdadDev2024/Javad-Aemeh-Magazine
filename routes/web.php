@@ -5,6 +5,7 @@ use App\Http\Controllers\MainController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ShowController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,11 +27,11 @@ Route::get("/news/{Khabar:slug}", [ShowController::class, "newsShow"])->name("Kh
 // User Interaction Routes
 // ==============================
 Route::get("/download" , [MainController::class , "download"])->name("download");
-Route::post('/create-comment/{model}/{contentId}', [CommentController::class, 'createComment'])->name('create.comment');
+Route::post('/create-comment/{model}/{contentId}', CommentController::class)->name('create.comment');
 Route::get('/contact-us', [MainController::class, "contact"])->middleware("auth")->name("contact");
 Route::post('/contact-us', [MainController::class, "doContact"])->middleware("auth")->name("do.contact");
 Route::post("/like/{type}/{id}", [LikeController::class, "toggleLike"])->middleware("auth")->name("toggle.like");
-Route::get("/search", [MainController::class, "search"])->name("search");
+Route::get("/search", SearchController::class)->name("search");
 Route::post("/profile", [UserController::class, "profile"])->middleware("auth")->name("profile");
 
 require_once __DIR__."/admin.php";

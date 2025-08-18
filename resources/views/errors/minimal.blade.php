@@ -5,9 +5,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>@yield('title')</title>
-        <link rel="stylesheet" href="{{asset("build/assets/app-1.css")}}">
-        <link rel="stylesheet" href="{{asset("build/assets/app-2.css")}}">
-        <script src="{{asset("build/assets/app-3.js")}}"></script>
+        @vite([
+            'resources/css/app.css',
+            'resources/js/app.js'
+        ])
         <style>
                     @font-face { font-family: "vasir"; src: url({{asset("assets/fonts/vasir.woff")}}); }
         </style>

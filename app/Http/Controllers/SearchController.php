@@ -2,40 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\SearchRequest;
+use App\Models\Magazine;
+use App\Models\Event;
+use App\Models\Khabar;
+use App\Models\Article;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Log;
 
 class SearchController extends Controller
 {
-        public function __invoke(SearchRequest $request)
-    {
-        $data = $request->validated([
-        ]);
 
-        $search = $data["search"] ?? null;
-        $type = $data["type"] ?? 'all';
+    public function __invoke(SearchRequest $request)
+    {
+        $data = $request->validated();
+        $search = $data['search'] ?? null;
+        $type = $data['type'] ?? 'all';
         $page = $request->input('page', 1);
         $perPage = 10;
 
         try {
             if ($type === 'all') {
-                $models = [
+                $results = collect([
                     Magazine::query(),
                     Event::query(),
                     Khabar::query(),
                     Article::query()
-                ];
+                ])->flatMap(function ($query) use ($search) {
+                    return $query->when($search, fn($q) => $q->where('title', 'like', "%{$search}%"))
+                                ->get();
+                });
 
-                if ($search) {
-                    foreach ($models as $model) {
-                        $model->where('title', 'like', "%{$search}%");
-                    }
-                }
-
-                $results = collect();
-
-                foreach ($models as $model) {
-                    $results = $results->merge($model->get());
-                }
+                $results = $results->sortByDesc('created_at')->values();
 
                 $paginated = new LengthAwarePaginator(
                     $results->forPage($page, $perPage),
@@ -44,28 +42,32 @@ class SearchController extends Controller
                     $page,
                     ['path' => $request->url(), 'query' => $request->query()]
                 );
-
             } else {
-                $model = match ($type) {
-                    'Magazine' => Magazine::query(),
-                    'Event' => Event::query(),
-                    'New' => Khabar::query(),
-                    'Article' => Article::query(),
-                    default => Magazine::query(),
-                };
+                $modelMap = [
+                    'Magazine' => Magazine::class,
+                    'Event' => Event::class,
+                    'Khabar' => Khabar::class, // اصلاح کلید
+                    'Article' => Article::class,
+                ];
 
-                if ($search) {
-                    $model->where('title', 'like', "%{$search}%");
-                }
-
-                $paginated = $model->paginate($perPage);
+                $query = ($modelMap[$type] ?? Magazine::class)::query();
+                $query->when($search, fn($q) => $q->where('title', 'like', "%{$search}%"));
+                $paginated = $query->latest()->paginate($perPage);
             }
 
         } catch (\Exception $e) {
-            Log::error("Search error: " . $e->getMessage());
-            $paginated = Magazine::paginate($perPage);
+            Log::error('Search error', [
+                'message' => $e->getMessage(),
+                'type' => $type,
+                'search' => $search
+            ]);
+            $paginated = Magazine::latest()->paginate($perPage);
         }
 
-        return view("main.search", ['results' => $paginated]);
+        return view('main.search', [
+            'results' => $paginated,
+            'search' => $search,
+            'type' => $type
+        ]);
     }
 }

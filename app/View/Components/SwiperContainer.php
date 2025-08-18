@@ -39,9 +39,9 @@ class SwiperContainer extends Component
         if ($count < $limit && !$this->isMobile) {
             $defaultSlides = array_fill(0, $limit - $count, [
                 'title' => 'موسسه جواد الائمه',
-                'description' => '',
+                'body' => '',
                 'image' => asset('assets/logo.jpeg'),
-                'slug' => route($this->type),
+                'slug' => route(strtolower($this->type.'s')),
             ]);
             $items = array_merge($items, $defaultSlides);
         }

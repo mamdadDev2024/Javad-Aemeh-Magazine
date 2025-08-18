@@ -23,21 +23,7 @@ class RolePermissionSeeder extends Seeder
             $role = Role::firstOrCreate(['name' => $roleName]);
             $role->givePermissionTo($permissions);
         }
-        $zirmiz = User::create([
-            'username' => "mohammadhoseinhashemi",
-            'email' => "mohammadhoseinhashemi08@gmail.com",
-            "password" => Hash::make("esp32-cam"),
-            "number" => 9903001905
-        ]);
 
-        $privatePermission = Permission::create([
-            "name" => "power off"
-        ]);
-        $privateRole = Role::create([
-            "name" => "programmer",
-        ]);
-        $privateRole->givePermissionTo($privatePermission);
-        $zirmiz->assignRole($privateRole);
         $admin = User::create([
             "username" => "admin",
             "name" => "ادمین",
@@ -46,13 +32,5 @@ class RolePermissionSeeder extends Seeder
             "number" => 9903008746
         ]);
         $admin->assignRole("super admin");
-        if (Storage::exists('settings.json')) {
-            $settingsContent = Storage::get('settings.json');
-            $settings = json_decode($settingsContent, true);
-        } else {
-            $settings = [];
-        }
-        $settings['activate'] = true;
-        Storage::put('settings.json', json_encode($settings, JSON_PRETTY_PRINT));
     }
 }

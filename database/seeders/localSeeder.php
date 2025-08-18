@@ -2,71 +2,51 @@
 
 namespace Database\Seeders;
 
-use App\Models\Article;
-use App\Models\Category;
-use App\Models\Event;
-use App\Models\Khabar;
-use App\Models\Scope;
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\{Article, Category, Event, Khabar, Magazine, Scope, User};
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
-class localSeeder extends Seeder
+class LocalSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        Scope::factory(3)->create();
-        Category::factory(30)->create();
-        User::factory(30)->create()->each(function ($user) {
-            $posts = Article::factory(rand(1, 4))->create(['user_id' => $user->id]);
-            $posts->each(function ($post) use ($user) {
-                $comments = rand(2, 5);
-                $post->comments()->create([
-                    "user_id" => $user->id,
-                    "text" => fake()->text()
+        DB::transaction(function () {
+            Scope::factory()->count(3)->create();
+            Category::factory()->count(30)->create();
+            $scopeIds = Scope::pluck('id')->toArray();
+
+            User::factory()->count(30)->create()->each(function ($user) use ($scopeIds) {
+                $user->assignRole('user');
+                $magazines = Magazine::factory(rand(1, 4))->create(['user_id' => $user->id]);
+                $events = Event::factory(rand(1, 4))->create(['user_id' => $user->id]);
+                $khabars = Khabar::factory(rand(1, 4))->create([
+                    'user_id' => $user->id,
+                    'scope_id' => fake()->randomElement($scopeIds)
                 ]);
 
-                $user->like($post);
-
-                $post->views()->create([
-                    "user_id" => $user->id,
-                    "ip_address" => "192.168.1.1"
-                ]);
-            });
-
-            $events = Event::factory(rand(1, 4))->create(['user_id' => $user->id]);
-            $events->each(function ($event) use ($user) {
-                $comments = rand(2, 5);
-                $event->comments()->create([
-                    "user_id" => $user->id,
-                    "text" => fake()->text()
-                ]);
-
-                $user->like($event);
-
-
-                $event->views()->create([
-                    "user_id" => $user->id,
-                    "ip_address" => "192.168.1.1"
-                ]);
-            });
-
-            $khabars = Khabar::factory(rand(1, 4))->create(['user_id' => $user->id , "scope_id" => rand(1,3)]);
-            $khabars->each(function ($khabar) use ($user) {
-                $khabar->comments()->create([
-                    "user_id" => $user->id,
-                    "text" => fake()->text()
-                ]);
-                $user->like($khabar);
-
-                $khabar->views()->create([
-                    "user_id" => $user->id,
-                    "ip_address" => "192.168.1.1"
-                ]);
+                $magazines->each(fn($post) => $this->addRelations($post, $user));
+                $magazines->each(function ($magazine) use($user) { 
+                    $articles = Article::factory(rand(1,4))->create(['magazine_id' => $magazine->id]);
+                    $articles->each(fn($article) => $this->addRelations($article , $user));
+                });
+                $events->each(fn($event) => $this->addRelations($event, $user));
+                $khabars->each(fn($khabar) => $this->addRelations($khabar, $user));
             });
         });
+    }
+
+    private function addRelations($model, $user): void
+    {
+        $model->comments()->create([
+            'user_id' => $user->id,
+            'body' => fake()->text()
+        ]);
+
+        $user->like($model);
+
+        $model->views()->create([
+            'user_id' => $user->id,
+            'ip_address' => '192.168.1.1'
+        ]);
     }
 }

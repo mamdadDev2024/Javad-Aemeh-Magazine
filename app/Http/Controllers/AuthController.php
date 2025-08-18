@@ -37,7 +37,8 @@ class AuthController extends Controller
         $data = $request->validated();
         try {
             if (Auth::attempt(['username' => $data["username"], 'password' => $data["password"]])) {
-                return ToastMagic::success("خوش آمدید", "ورود با موفقیت انجام شد");
+                ToastMagic::success("خوش آمدید", "ورود با موفقیت انجام شد");
+                return redirect()->route('home');
             } else {
                 ToastMagic::error("خطا", "حساب کاربری با این مشخصات پیدا نشد");
                 return redirect()->back();

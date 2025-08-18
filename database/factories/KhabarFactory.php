@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-
+use Illuminate\Support\Str;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Khabar>
  */
@@ -16,10 +16,11 @@ class KhabarFactory extends Factory
      */
     public function definition(): array
     {
+        $title = fake()->sentence();
         return [
-            "title" => fake()->sentence(),
+            "title" => $title,
+            "slug" => Str::slug($title),
             "body" => fake()->paragraph(),
-            "status" => 1,
             'image' => "images/personal-image.png",
         ];
     }

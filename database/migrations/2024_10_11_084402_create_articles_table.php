@@ -16,7 +16,7 @@ return new class extends Migration
                 $table->string('title');
                 $table->string('slug')->unique();
                 $table->string("author");
-                $table->text("text");
+                $table->text("body");
                 $table->text("abstract");
                 $table->foreignId("magazine_id")->constrained("magazines")->cascadeOnDelete();
                 $table->timestamps();

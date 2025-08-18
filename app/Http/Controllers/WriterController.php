@@ -231,7 +231,7 @@ class WriterController extends Controller
             "id" => "required|exists:magazines,id",
             "title" => "required|string|min:6|max:100",
             "image" => "nullable|image|max:4000",
-            "desc" => "nullable|string|min:10",
+            "body" => "nullable|string|min:10",
             "addOn" => "nullable|file|mimes:pdf,docx|max:5000",
             "category" => "nullable|array|exists:categories,id",
             "articles" => "nullable|array",
@@ -240,7 +240,7 @@ class WriterController extends Controller
             "articles.*.author" => "required|string|min:2|max:50",
             "articles.*.title" => "required|string|min:6|max:100",
             "articles.*.abstract" => "required|string|min:15|max:10000",
-            "articles.*.text" => "required|min:15|string|max:100000",
+            "articles.*.body" => "required|min:15|string|max:100000",
         ]);
         $magazine = Magazine::findOrFail($data["id"]);
         DB::beginTransaction();
@@ -248,7 +248,7 @@ class WriterController extends Controller
             $this->handleFiles($request, $magazine);
             $magazine->update([
                 'title' => $data['title'],
-                "body" => $data["desc"],
+                "body" => $data["body"],
                 'slug' => Str::slug($data['title']) ?: uniqid(),
             ]);
             $this->syncCategories($data['category'] ?? [], $magazine);
@@ -259,7 +259,7 @@ class WriterController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             Log::error("Error updating magazine: {$th->getMessage()}");
-            ToastMagic::success("خطا", "مشکلی پیش آمد. لطفا بعدا تلاش کنید.");
+            ToastMagic::error("خطا", "مشکلی پیش آمد. لطفا بعدا تلاش کنید.");
             return redirect()->back()->withInput();
         }
     }
@@ -302,7 +302,7 @@ class WriterController extends Controller
                 'title'   => $articleData['title'],
                 'author'  => $articleData['author'],
                 'abstract'=> $articleData['abstract'],
-                'text'    => $articleData['text'],
+                'body'    => $articleData['body'],
                 'url'     => $addOnPathArticle,
             ]);
         }

@@ -1,6 +1,9 @@
 import "./bootstrap";
 import Swiper from "swiper/bundle";
 import "swiper/css/bundle";
+import AOS from 'aos';
+import 'aos/dist/aos.css'; // You can also use <link> for styles
+AOS.init();
 const initMainSwiper = () => {
     const newsSwiperContainer = document.querySelector(".news-swiper-container");
     if (!newsSwiperContainer) return;

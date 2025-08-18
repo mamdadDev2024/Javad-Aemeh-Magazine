@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Article>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Magazine>
  */
-class ArticleFactory extends Factory
+class MagazineFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -19,10 +19,10 @@ class ArticleFactory extends Factory
         $title = fake()->sentence();
         return [
             'title' => $title,
-            'author' => fake()->name(),
+            'body' => fake()->text(100),
             'slug' => Str::slug($title),
-            'body' => fake()->text(50000),
-            'abstract' => fake()->text(100)
+            'pdf' => fake()->url(),
+            'image' => fake()->imageUrl(),
         ];
     }
 }

@@ -149,6 +149,7 @@ return [
         'first_name'            => 'نام',
         'comment_body'          => 'متن',
         'comment_title'         => 'عنوان',
+        'g-recaptcha-response'  => 'اعتبار سنجی ربات',
         'last_name'             => 'نام خانوادگی',
         'password'              => 'رمز عبور',
         'password_confirmation' => 'تکرار رمز عبور',

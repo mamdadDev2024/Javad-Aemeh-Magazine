@@ -46,7 +46,7 @@ class ShowController extends Controller
                 ->first();
             if (!$article) {
                 ToastMagic::error('موجود نیست!', 'شاید آدرسو اشتباه رفتی!');
-                return redirect()->back();
+                return redirect()->route('home');
             }
 
 
@@ -143,5 +143,32 @@ class ShowController extends Controller
             ToastMagic::error('موجود نیست!', 'شاید آدرسو اشتباه رفتی!');
             return redirect()->back();
         }
+    }
+
+    // CHANGED: Add simple preview methods referenced in routes (admin only via middleware)
+    public function articlePreview($id)
+    {
+        $article = Article::findOrFail($id);
+        $type = 'Article';
+        $relateds = collect();
+        return view('show.ArticleShow', compact('article', 'relateds', 'type'));
+    }
+
+    public function eventPreview($id)
+    {
+        $item = Event::findOrFail($id);
+        $type = 'Event';
+        $relateds = collect();
+        $categories = $item->categories()->get()->toArray();
+        return view('show.ContentShow', compact('item', 'relateds', 'type', 'categories'));
+    }
+
+    public function newsPreview($id)
+    {
+        $item = Khabar::findOrFail($id);
+        $type = 'Khabar';
+        $relateds = collect();
+        $categories = $item->categories()->get()->toArray();
+        return view('show.ContentShow', compact('item', 'relateds', 'type', 'categories'));
     }
 }

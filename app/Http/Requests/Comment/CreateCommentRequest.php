@@ -23,7 +23,8 @@ class CreateCommentRequest extends FormRequest
     {
         return [
             'g-recaptcha-response' => 'required|captcha',
-            "text" => "required|string|min:5|max:1000",
+            // CHANGED: Rename to body to match DB column
+            "body" => "required|string|min:5|max:1000",
         ];
     }
 

@@ -17,7 +17,8 @@ class LikeController extends Controller
         try {
             $user = Auth::user();
             if (!$user) {
-                return ToastMagic::success("احراز هویت", "اول وارد حساب شوید");
+                ToastMagic::success("احراز هویت", "اول وارد حساب شوید");
+                return back();
             }
 
             $model = match ($type) {
@@ -29,7 +30,8 @@ class LikeController extends Controller
             };
 
             if (!$model) {
-                return ToastMagic::error("خطا", "نوع محتوا نامعتبر است");
+                ToastMagic::error("خطا", "نوع محتوا نامعتبر است");
+                return back();
             }
 
             $content = $model::findOrFail($id);
@@ -39,14 +41,18 @@ class LikeController extends Controller
                 ? "با موفقیت انجام شد"
                 : "لایک شما حذف شد";
 
-            return ToastMagic::success("انجام شد", $message , "success");
+            ToastMagic::success("انجام شد", $message);
+            return back();
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return ToastMagic::error("خطا", "محتوای مورد نظر یافت نشد");
+            ToastMagic::error("خطا", "محتوای مورد نظر یافت نشد");
+            return back();
 
         } catch (\Throwable $th) {
             Log::error("Error in toggleLike for {$type}: " . $th->getMessage());
-            return ToastMagic::error("خطا", "مشکلی در پردازش درخواست شما رخ داد");
+            ToastMagic::error("خطا", "مشکلی در پردازش درخواست شما رخ داد");
+            return back();
+
         }
     }
 }

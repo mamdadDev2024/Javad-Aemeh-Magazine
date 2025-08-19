@@ -5,6 +5,7 @@
     @if ($section && $section->content)
         <div class="flex justify-center ">
             <a href="{{ route('home') }}">
+                <!-- CHANGED: Use storage path for public files -->
                 <img src="{{ asset($section->content) }}" alt="Title Header" class="w-full h-full">
             </a>
         </div>

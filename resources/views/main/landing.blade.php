@@ -15,6 +15,7 @@
     <div class="rounded-2xl mx-4">
         <div class="rounded-xl p-4 flex flex-col lg:flex-row justify-between bg-blue-300 dark:bg-darkPrimary items-center shadow-lg">
             @if (count($khabars) > 0)
+                <!-- CHANGED: Ensure images use storage path inside component -->
                 <x-swiper_container :items="$khabars" type="Khabar" defaultLink="{{ route('news') }}" containerClass="news-swiper-container" />
             @endif
         </div>

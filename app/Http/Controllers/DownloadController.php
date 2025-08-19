@@ -16,7 +16,10 @@ class DownloadController extends Controller
 
         try {
             if ($path) {
-                return Storage::exists($path) ?: Storage::download($path);
+                // CHANGED: Check on public disk and download if exists
+                if (Storage::disk('public')->exists($path)) {
+                    return Storage::disk('public')->download($path);
+                }
             }
 
             ToastMagic::error("انجام نشد", "فایل موجود نیست");

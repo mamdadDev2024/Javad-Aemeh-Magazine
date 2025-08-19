@@ -21,7 +21,7 @@ class EventFactory extends Factory
             "title" => $title,
             'slug' => Str::slug($title),
             "body" => fake()->paragraph(),
-            'image' => "images/personal-image.png", // Or provide a valid path
+            'image' => "images/personal-image.png",
         ];
     }
 }

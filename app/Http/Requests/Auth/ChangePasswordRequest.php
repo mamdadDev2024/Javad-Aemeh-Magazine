@@ -11,7 +11,8 @@ class ChangePasswordRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // CHANGED: Allow guests to change password in reset flow
+        return !auth()->check();
     }
 
     /**

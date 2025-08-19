@@ -94,14 +94,18 @@ class WriterController extends Controller
             }
 
             if (!empty($data['articles'])) {
-                foreach ($data['articles'] as $article) {
-                    $addOnPathArticle = $request->hasFile($article['addOn']) ? $article["addOn"]->store("attachments", "public") : null;
+                foreach ($data['articles'] as $idx => $article) {
+                    // CHANGED: Correct file handling and body field
+                    $addOnPathArticle = null;
+                    if ($request->hasFile("articles.$idx.addOn")) {
+                        $addOnPathArticle = $request->file("articles.$idx.addOn")->store("attachments", "public");
+                    }
                     $magazine->articles()->create([
                         "title" => $article['title'],
                         "author" => $article["author"],
                         "url" => $addOnPathArticle,
                         "abstract" => $article['abstract'],
-                        "text" => $article['text'],
+                        "body" => $article['text'],
                         "slug" => Str::slug($article["title"], '-') ?: uniqid()
                     ]);
                 }
@@ -122,7 +126,7 @@ class WriterController extends Controller
     public function newCreate(Request $request)
     {
         $data = $request->validate([
-            'g-recaptcha-response' => 'required|captcha',
+            // 'g-recaptcha-response' => 'required|captcha',
             "title" => "required|min:6|max:100",
             "body" => "required|min:15|max:100000",
             "image" => "file|image|mimes:jpeg,jpg,svg|max:2048",
@@ -138,7 +142,7 @@ class WriterController extends Controller
             $scope = isset($data["scope"]) ? Scope::findOrFail($data["scope"]) : null;
             $image = $request->file("image");
             $addOnPath = $request->hasFile('addOn') ? $request->file("addOn")->store("attachments", "public") : null;
-            $imagePath = $image->store("images", "public");
+            $imagePath = $image ? $image->store("images", "public") : null; // CHANGED: guard null
 
             $news = $scope ? $scope->news()->create([
                 "title" => $data["title"],
@@ -160,7 +164,8 @@ class WriterController extends Controller
             return redirect()->back();
         } catch (\Throwable $th) {
             Log::error("Error while creating news: " . $th);
-            ToastMagic::success("انجام نشد", "متاسفانه در پردازشات مشکلی به وجود آمد لطفا بعدا امتحان کنید");
+            // CHANGED: Use error instead of success on failure
+            ToastMagic::error("انجام نشد", "متاسفانه در پردازشات مشکلی به وجود آمد لطفا بعدا امتحان کنید");
             return redirect()->back();
         }
     }
@@ -171,7 +176,7 @@ class WriterController extends Controller
             'g-recaptcha-response' => 'required|captcha',
             "title" => "required|min:6|max:100",
             "body" => "required|min:15|max:100000",
-            "image" => "required|image|mimes:jpeg,jpg,svg|max:2048",
+            "image" => "required|image|mimes:jpeg,png,jpg,svg|max:2048",
             "category" => "array|nullable|exists:categories,id",
         ], [
             'g-recaptcha-response.required' => 'لطفاً تأیید کنید که شما ربات نیستید.',
@@ -191,7 +196,8 @@ class WriterController extends Controller
             return redirect()->back();
         } catch (\Throwable $th) {
             Log::error("Error while creating event: " . $th);
-            ToastMagic::success("انجام نشد", "متاسفانه در پردازشات مشکلی به وجود آمد لطفا بعدا امتحان کنید");
+            // CHANGED: Use error instead of success on failure
+            ToastMagic::error("انجام نشد", "متاسفانه در پردازشات مشکلی به وجود آمد لطفا بعدا امتحان کنید");
             return redirect()->back();
         }
     }

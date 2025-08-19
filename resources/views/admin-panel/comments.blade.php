@@ -23,7 +23,23 @@
                 @foreach ($notConfirmedComments as $comment)
                     <tr>
                         <td class="border border-gray-300 p-2">{{ $comment->user->username }}</td>
-                        <td class="border border-gray-300 p-2"><a href='{{ route($comment->commentable_type.".show" , $comment->commentable->slug) }}'></a>{{ $comment->commentable->title }}</td>
+                        <!-- CHANGED: Map model class to route name safely -->
+                        @php
+                            $route = match($comment->commentable_type) {
+                                'App\\Models\\Article' => 'Article.show',
+                                'App\\Models\\Khabar' => 'Khabar.show',
+                                'App\\Models\\Event' => 'Event.show',
+                                'App\\Models\\Magazine' => 'Magazine.show',
+                                default => null,
+                            };
+                        @endphp
+                        <td class="border border-gray-300 p-2">
+                            @if($route)
+                                <a href='{{ route($route , $comment->commentable->slug) }}'>{{ $comment->commentable->title }}</a>
+                            @else
+                                {{ $comment->commentable->title }}
+                            @endif
+                        </td>
                         <td class="border border-gray-300 p-2">{{ $comment->body }}</td>
                         <td class="border border-gray-300 p-2">{{ Illuminate\Support\Carbon::parse($comment->created_at)->diffForHumans() }}</td>
                         <td class="border border-gray-300 p-2">

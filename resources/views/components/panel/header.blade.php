@@ -12,7 +12,8 @@
                     کاربری</a>
 
                 @role('writer|admin|super admin')
-                    <a href="{{ route('writer.article_create') }}"
+                    <!-- CHANGED: Update to existing route name for magazine create -->
+                    <a href="{{ route('writer.magazine.create') }}"
                         class="block px-4 py-2 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-colors duration-300">نوشتن
                         نشریه جدید</a>
                     <a href="{{ route('news') }}"
@@ -45,11 +46,11 @@
     <div class=" h-full flex justify-center text-center">
         <a href="{{ route('contact') }}"
             class=" hover:bg-red-600 max-sm:hidden transition-all text-nowrap px-2 py-6 min-w-20 h-full">تماس با ما</a>
-        <a href="{{ route('report') }}"
-            class=" hover:bg-red-600 max-sm:hidden transition-all max-md:hidden text-nowrap px-2 py-6 min-w-20 h-full">گزارش مشکل</a>
+        <!-- CHANGED: Remove link to non-existing report route -->
         <a href="{{ route('news') }}"
             class=" hover:bg-red-600 max-sm:hidden transition-all text-nowrap px-2 py-6 min-w-20 h-full">اخبار</a>
-        <a href="{{ route('articles') }}"
+        <!-- CHANGED: Fix label (list page is magazines) -->
+        <a href="{{ route('magazines') }}"
             class=" hover:bg-red-600 max-sm:hidden transition-all text-nowrap px-2 py-6 min-w-20 h-full">نشریه ها</a>
         <a href="{{ route('events') }}"
             class=" hover:bg-red-600 max-sm:hidden transition-all text-nowrap px-2 py-6 min-w-20 h-full">رویداد ها</a>

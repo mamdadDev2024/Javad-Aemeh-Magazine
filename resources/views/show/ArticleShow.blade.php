@@ -27,7 +27,8 @@
                 </p>
                 <p class="mt-4 text-right text-gray-700 dark:text-gray-300" data-aos="fade-up">
                     <span class=" font-bold text-lg">متن</span><br>
-                    {!! nl2br(e($article->text)) !!}
+                    <!-- CHANGED: Use body instead of text to match schema -->
+                    {!! nl2br(e($article->body)) !!}
                 </p>
                 <!-- Like and Views -->
                 <div class="flex articles-center justify-between mt-5">
@@ -51,7 +52,8 @@
             @forelse ($article->comments as $comment)
                 <div class="mt-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
                     <p class="text-sm text-gray-500 dark:text-gray-400">{{ $comment->created_at->diffForHumans() }}</p>
-                    <p class="mt-2 text-gray-900 dark:text-gray-100">{{ $comment->text }}</p>
+                    <!-- CHANGED: Align with body column -->
+                    <p class="mt-2 text-gray-900 dark:text-gray-100">{{ $comment->body }}</p>
                 </div>
             @empty
                 <p class="text-gray-500 dark:text-gray-400 mt-5">هیچ نظری وجود ندارد.</p>
@@ -60,7 +62,8 @@
             @auth
                 <form method="POST" action="{{ route('create.comment', ["contentId" => $article->id , "model" => $type]) }}" class="mt-5">
                     @csrf
-                    <textarea name="text" rows="3" class="w-full p-3 rounded-lg dark:bg-gray-700 dark:text-gray-300"
+                    <!-- CHANGED: Align request field name with backend -->
+                    <textarea name="body" rows="3" class="w-full p-3 rounded-lg dark:bg-gray-700 dark:text-gray-300"
                         placeholder="نظر خود را وارد کنید..." required></textarea>
                     <x-captcha/>
                     <button class="mt-3 px-5 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
@@ -80,10 +83,12 @@
             <div class="mt-5 space-y-4">
                 @forelse ($relateds as $related)
                     <div class="flex articles-center bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+                        <!-- CHANGED: Use storage path for related images -->
                         <img src="{{ asset($related['image']) }}" alt="{{ $related['title'] }}"
                             class="w-16 h-16 object-cover rounded-lg">
                         <div class="ml-4">
-                            <a href="{{ route("strtolower($type).show", $related['slug']) }}"
+                            <!-- CHANGED: Build route name dynamically in PHP to avoid literal string -->
+                            <a href="{{ route(strtolower($type).'.show', $related['slug']) }}"
                                 class="text-blue-500 dark:text-orange-300 hover:underline">
                                 {{ Illuminate\Support\Str::limit($related['title'], 30) }}
                             </a>

@@ -11,7 +11,8 @@ class RegisterRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // CHANGED: Allow guests to register
+        return !auth()->check();
     }
 
     /**

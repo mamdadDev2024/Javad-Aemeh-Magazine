@@ -7,6 +7,7 @@ use App\Http\Controllers\IndexController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ShowController;
+use App\Http\Controllers\DownloadController;
 use Illuminate\Support\Facades\Route;
 
 // ==============================
@@ -26,7 +27,8 @@ Route::get("/news/{Khabar:slug}", [ShowController::class, "newsShow"])->name("Kh
 // ==============================
 // User Interaction Routes
 // ==============================
-Route::get("/download" , [MainController::class , "download"])->name("download");
+// CHANGED: Route download to dedicated invokable controller
+Route::get('/download', DownloadController::class)->name('download');
 Route::post('/create-comment/{model}/{contentId}', CommentController::class)->name('create.comment');
 Route::get('/contact-us', [MainController::class, "contact"])->middleware("auth")->name("contact");
 Route::post('/contact-us', [MainController::class, "doContact"])->middleware("auth")->name("do.contact");

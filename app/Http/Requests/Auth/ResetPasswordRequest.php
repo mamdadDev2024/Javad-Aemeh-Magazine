@@ -24,6 +24,8 @@ class ResetPasswordRequest extends FormRequest
         return [
             'number' => 'required|numeric|exists:users,number',
             'username' => 'required|string|exists:users,username',
+            // CHANGED: include captcha for forget step safety
+            'g-recaptcha-response' => 'required|captcha',
         ];
     }
 }

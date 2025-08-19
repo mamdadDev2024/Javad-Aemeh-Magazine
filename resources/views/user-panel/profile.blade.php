@@ -13,6 +13,7 @@
     }
 @endphp
     <main class="flex justify-center py-8">
+        <!-- CHANGED: Ensure correct route name (web.php defines name 'profile') is kept -->
         <form action="{{ route('profile') }}" enctype="multipart/form-data" method="post" class="container flex flex-col gap-6 p-8 bg-white shadow-lg rounded-lg">
             @csrf
             @if(!empty($user['image']))

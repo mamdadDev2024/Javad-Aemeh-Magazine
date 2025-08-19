@@ -21,9 +21,10 @@ class SearchRequest extends FormRequest
      */
     public function rules(): array
     {
+        // CHANGED: Align allowed types with controllers/views (Khabar instead of New)
         return [
             "search" => "nullable|string",
-            "type" => "nullable|string|in:Magazine,Article,Event,New,all"
+            "type" => "nullable|string|in:Magazine,Article,Event,Khabar,all"
         ];
     }
 }

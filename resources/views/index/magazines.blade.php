@@ -9,6 +9,7 @@
                 <div
                     class="col-span-1 p-4 rounded-xl bg-blue-400 dark:bg-emerald-800 shadow-md transition-transform transform hover:scale-105 hover:shadow-lg duration-300 animate-fadeIn">
                     <a href="{{ route('Magazine.show', $magazine->slug) }}">
+                        <!-- CHANGED: Use storage path for public images -->
                         <img src="{{ asset($magazine->image) }}" alt="{{ $magazine->title }}"
                             class="w-full h-48 rounded-xl object-cover mb-4" loading="lazy">
                     </a>

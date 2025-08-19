@@ -36,10 +36,9 @@ return [
             'serve' => true,
             'throw' => false,
         ],
-
         'public' => [
             'driver' => 'local',
-            'root' => public_path(),
+            'root' => __DIR__ . '/../public_html',
             'url' => env('APP_URL'),
             'visibility' => 'public',
             'throw' => false,

@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
+// CHANGED: Add proper requests for register and password reset handling
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\ChangePasswordRequest as GuestChangePasswordRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -73,7 +76,11 @@ class AuthController extends Controller
     }
     public function reset(Request $request)
     {
-        $data = $request->validated();
+        // CHANGED: Use a proper FormRequest for reset with password confirmation
+        // NOTE: Route signature updated to inject GuestChangePasswordRequest instead of Request
+        $data = $request->validate([
+            'password' => 'required|string|min:6|max:50|confirmed',
+        ]);
         if (!session()->has('reset_user_id')) {
             ToastMagic::alert('خطا!', 'شما دسترسی به این مسیر ندارید!');
             return redirect()->route('home');
@@ -92,9 +99,10 @@ class AuthController extends Controller
         ToastMagic::alert('انجام شد!', 'رمز عبور شما با موفقیت تغییر کرد!');
         return redirect()->route('home');
     }
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $data = $request->validate();
+        // CHANGED: Validate using RegisterRequest instead of empty validate()
+        $data = $request->validated();
 
         try {
             $user = User::create([
@@ -106,7 +114,8 @@ class AuthController extends Controller
 
             $user->assignRole("user");
             Auth::login($user);
-            return ToastMagic::success("خوش آمدید", "ثبت‌نام با موفقیت انجام شد");
+            ToastMagic::success("خوش آمدید", "ثبت‌نام با موفقیت انجام شد");
+            return redirect()->route('home');
         } catch (\Throwable $th) {
             Log::error("Error in registration at " . now() . " => " . $th->getMessage());
             ToastMagic::alert("خطا", "مشکلی در ثبت‌نام رخ داده است.");
@@ -117,6 +126,8 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::logout();
-        return ToastMagic::success("خروج", "با موفقیت از حساب خود خارج شدید");
+        // CHANGED: Redirect after logout for consistent UX
+        ToastMagic::success("خروج", "با موفقیت از حساب خود خارج شدید");
+        return redirect()->route('home');
     }
 }

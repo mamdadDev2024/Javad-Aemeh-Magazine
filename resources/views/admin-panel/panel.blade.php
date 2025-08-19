@@ -82,7 +82,8 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 @foreach($links as $link)
                     <div class="flex flex-col items-start gap-2 rounded-xl p-4 shadow-xl border">
-                        <a href="{{$link['link']}}" class="text-blue-500 font-semibold hover:underline">
+                        <!-- CHANGED: Add rel noopener for external links -->
+                        <a href="{{$link['link']}}" rel="noopener" class="text-blue-500 font-semibold hover:underline">
                             {{$link['name']}}
                         </a>
                         <form method="POST" action="{{route("admin.delete.link")}}">

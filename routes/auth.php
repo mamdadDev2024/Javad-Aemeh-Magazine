@@ -12,6 +12,7 @@ Route::prefix('auth')
         Route::get("/forget" , [AuthController::class , "forgetView"])->name("forget");
         Route::post("/forget" , [AuthController::class , "forget"])->name("do_forget");
         Route::get("/reset" , [AuthController::class , "resetView"])->name("reset");
+        // CHANGED: Password reset posts confirmed password
         Route::post("/reset" , [AuthController::class , "reset"])->name("do_reset");
     });
 Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout')->middleware('auth');

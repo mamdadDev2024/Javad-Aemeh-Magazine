@@ -22,13 +22,16 @@ class CommentController extends Controller
         $model = $model->find($contentId);
         try {
             $model->comments()->create([
+                // CHANGED: use body (aligned with migration and request)
                 "body" => $data["body"],
                 "user_id" => Auth::id()
             ]);
-            return ToastMagic::success("نظر شما ثبت شد", "منتظر تایید باشید");
+            ToastMagic::success("نظر شما ثبت شد", "منتظر تایید باشید");
+            return back();
         } catch (\Throwable $th) {
             Log::error("Error creating comment: " . $th->getMessage());
-            return ToastMagic::error("مشکلی پیش آمده", "در صورتی که شرایط عادی است به ادمین گزارش دهید");
+            ToastMagic::error("مشکلی پیش آمده", "در صورتی که شرایط عادی است به ادمین گزارش دهید");
+            return back();
         }
     }
 }

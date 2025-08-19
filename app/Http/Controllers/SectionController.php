@@ -19,13 +19,15 @@ class SectionController extends Controller
         try {
             if (!in_array($fieldName, ["titleHeader", "titleFooter"])) {
                 $data = $request->validate([
-                    "captcha"=>"required|captcha",
+                    // CHANGED: Align captcha field name
+                    'g-recaptcha-response' => 'required|captcha',
                     $fieldName => "required|string|max:1000",
                 ]);
                 $section->content = $data[$fieldName];
             } else {
                 $data = $request->validate([
-                    "captcha"=>"required|captcha",
+                    // CHANGED: Align captcha field name
+                    'g-recaptcha-response' => 'required|captcha',
                     $fieldName => "required|image|max:1024",
                 ]);
 

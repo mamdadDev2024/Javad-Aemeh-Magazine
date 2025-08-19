@@ -9,15 +9,7 @@
     <div class="flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8">
         <form action="{{ route('do.contact') }}" method="POST" class="bg-slate-800 rounded-2xl shadow-xl w-full max-w-md p-6 space-y-6">
             @csrf
-            <div>
-                <label for="number" class="block text-sm font-medium text-white">شماره تماس</label>
-                <div class="mt-1">
-                    <input name="number" id="number" class="transition-all max-h-96 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 px-3 py-2 text-white bg-slate-700 rounded-lg w-full placeholder-gray-300" placeholder="شماره خود را بنویسید ." required>
-                </div>
-                @error('number')
-                    <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
-                @enderror
-            </div>
+            <h2 class=" text-lg font-bold text-white flex justify-center">تماس باما</h2>
             <div>
                 <label for="body" class="block text-sm font-medium text-white">متن</label>
                 <div class="mt-1">

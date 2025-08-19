@@ -14,5 +14,6 @@ Route::prefix("user-panel")
         Route::post("/change-password", [UserController::class, "doChangePassword"])->name("do.change.password");
         Route::get("/create", [UserController::class, "create"])->name("create");
         Route::post("/do_create", [UserController::class, "doSuggest"])->name("do.suggest");
-        Route::get("/delete/{id}", [UserController::class, "destroy"])->name("delete");
+        // CHANGED: Use DELETE instead of GET for destructive action
+        Route::delete("/delete/{id}", [UserController::class, "destroy"])->name("delete");
     });

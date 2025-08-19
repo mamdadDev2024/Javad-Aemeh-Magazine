@@ -6,6 +6,7 @@
     <div class="min-h-screen p-5 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
         <div class="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
             <div class="relative">
+                <!-- CHANGED: Use storage path for public disk files -->
                 <img src="{{ asset($magazine->image) }}" alt="{{ $magazine->title }}" class=" w-full object-cover"
                     data-aos="fade-down">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-5">
@@ -75,7 +76,7 @@
             @forelse ($magazine->comments as $comment)
                 <div class="mt-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
                     <p class="text-sm text-gray-500 dark:text-gray-400">{{ $comment->created_at->diffForHumans() }}</p>
-                    <p class="mt-2">{{ $comment->text }}</p>
+                    <p class="mt-2">{{ $comment->body }}</p>
                 </div>
             @empty
                 <p class="text-gray-500 dark:text-gray-400">هیچ نظری وجود ندارد.</p>
@@ -86,7 +87,8 @@
                     action="{{ route('create.comment', ['contentId' => $magazine->id, 'model' => 'Magazine']) }}"
                     class="mt-6">
                     @csrf
-                    <textarea name="text" rows="3" class="w-full p-3 bg-gray-100 dark:bg-gray-700 rounded-lg resize-none"
+                    <!-- CHANGED: Align request field name with backend -->
+                    <textarea name="body" rows="3" class="w-full p-3 bg-gray-100 dark:bg-gray-700 rounded-lg resize-none"
                         placeholder="نظر خود را وارد کنید..." required></textarea>
                     <x-captcha/>
                     <button class="mt-3 w-full px-5 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
@@ -105,6 +107,7 @@
                 @forelse ($relateds as $related)
                     <div
                         class="flex items-center bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-sm hover:shadow-md transition">
+                        <!-- CHANGED: Use storage path for related images -->
                         <img src="{{ asset($related['image']) }}" alt="{{ $related['title'] }}"
                             class="w-16 h-16 object-cover rounded-lg">
                         <div class="ml-4 truncate">

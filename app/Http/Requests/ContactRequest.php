@@ -24,7 +24,6 @@ class ContactRequest extends FormRequest
         return [
             'g-recaptcha-response' => 'required|captcha',
             "body" => "required|min:10|max:10000|string",
-            "number" => "required|min:9|numeric"
         ];
     }
 }

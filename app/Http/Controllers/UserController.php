@@ -46,6 +46,7 @@ class UserController extends Controller
     public function profile(UpdateUserRequest $request)
     {
         if ($request->delete && Auth::check()) {
+            // CHANGED: Deleting account should be DELETE with CSRF; redirect to proper method
             return redirect()->route("user.delete", Auth::id());
         }
 
@@ -96,8 +97,12 @@ class UserController extends Controller
 
     public function doSuggest(Request $request)
     {
+        // CHANGED: Add proper validation for suggest
         $data = $request->validate([
-
+            'g-recaptcha-response' => 'required|captcha',
+            'title' => 'required|string|min:6|max:150',
+            'pdf' => 'required|file|mimes:pdf|max:10240',
+            'word' => 'nullable|file|mimes:doc,docx|max:10240',
         ], [
             'g-recaptcha-response.required' => 'لطفاً تأیید کنید که شما ربات نیستید.',
             'g-recaptcha-response.captcha' => 'اعتبارسنجی reCAPTCHA ناموفق بود. لطفاً دوباره امتحان کنید.',
@@ -106,7 +111,7 @@ class UserController extends Controller
         try {
             $user = Auth::user();
             $pdfPath = $request->file("pdf")->store("attachments", "public");
-            $wordPath = $request->hasFile("word") ? $request->file("word")->store("attachments", "public") : "";
+            $wordPath = $request->hasFile("word") ? $request->file("word")->store("attachments", "public") : null;
 
             $user->recommends()->create([
                 "pdf" => $pdfPath,

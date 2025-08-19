@@ -60,16 +60,8 @@ class MainController extends Controller
     {
         $data = $request->validated();
 
-        $user = Auth::user();
-
-        if (!$user) {
-            ToastMagic::error("خطا", "ابتدا وارد حساب کاربری خود شوید");
-            return redirect()->route("login");
-        }
-
-        $user->contacts()->create([
-            "body" => $data["body"],
-            "number" => $data["number"]
+        Auth::user()->contacts()->create([
+            "body" => $data["body"]
         ]);
 
         ToastMagic::success("ثبت شد", "فرم ارسال شد");

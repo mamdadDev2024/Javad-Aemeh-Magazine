@@ -5,10 +5,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>@yield('title')</title>
-        @vite([
-            'resources/css/app.css',
-            'resources/js/app.js'
-        ])
+        @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
+            @vite('resources/css/app.css')
+        @else
+            <link rel="stylesheet" href="{{ asset('build/assets/app-1.css') }}">
+            <link rel="stylesheet" href="{{ asset('build/assets/app-2.css') }}">
+        @endif
         <style>
                     @font-face { font-family: "vasir"; src: url({{asset("assets/fonts/vasir.woff")}}); }
         </style>

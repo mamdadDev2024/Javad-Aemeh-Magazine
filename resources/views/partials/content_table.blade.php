@@ -27,7 +27,7 @@
                         <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
                             @if($showImage ?? false)
                                 <td class="p-2">
-                                    <img src="{{ $item->image ? asset('storage/' . $item->image) : asset('images/placeholder.png') }}"
+                                    <img src="{{ $item->image ? asset( $item->image) : asset('images/placeholder.png') }}"
                                          alt="{{ $item->title }} - image"
                                          class="h-12 w-12 sm:h-16 sm:w-16 rounded-full object-cover">
                                 </td>
@@ -75,7 +75,7 @@
             @foreach ($items as $item)
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col space-y-2">
                     @if($showImage ?? false)
-                        <img src="{{ $item->image ? asset('storage/' . $item->image) : asset('images/placeholder.png') }}"
+                        <img src="{{ $item->image ? asset( $item->image) : asset('images/placeholder.png') }}"
                              alt="{{ $item->title }} - image"
                              class="h-24 w-24 rounded-full object-cover mx-auto">
                     @endif

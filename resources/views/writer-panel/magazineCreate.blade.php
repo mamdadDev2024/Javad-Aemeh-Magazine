@@ -30,7 +30,7 @@
         {{-- تصویر نشریه --}}
         <div class="mb-6">
             <label for="image" class="block text-sm font-medium text-gray-700 dark:text-gray-300">(JPEG یا JPG) تصویر نشریه</label>
-            <input type="file" name="image" id="image" accept="image/image"
+            <input type="file" name="image" id="image" accept=".jpg,.jpeg,.png"
                 class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 dark:bg-gray-800 dark:text-white @error('image') border-red-500 @enderror"
                 required>
             @error('image')<div class="text-red-500 text-sm mt-1">{{ $message }}</div>@enderror
@@ -95,44 +95,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const addArticleButton = document.getElementById('add-article-button');
     const articlesContainer = document.getElementById('articles-container');
 
-    addArticleButton.addEventListener('click', () => {
-        const template = `
-        <div class="article-form border rounded-md p-4 mb-4 bg-gray-100 dark:bg-gray-800">
-            <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">مقاله شماره ${articleIndex + 1}</h3>
+    function resetArticleIndexes() {
+        const forms = document.querySelectorAll('#articles-container .article-form');
+        forms.forEach((form, index) => {
+            form.querySelector('h3').innerText = `مقاله شماره ${index + 1}`;
+            form.querySelectorAll('input, textarea').forEach(el => {
+                const name = el.getAttribute('name');
+                if (!name) return;
+                if(el.type === 'file') return; // فایل را تغییر نده
+                el.setAttribute('name', name.replace(/articles\[\d+\]/, `articles[${index}]`));
+            });
+        });
+    }
 
+    function createArticleForm(index) {
+        const div = document.createElement('div');
+        div.className = 'article-form border rounded-md p-4 mb-4 bg-gray-100 dark:bg-gray-800';
+        div.innerHTML = `
+            <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">مقاله شماره ${index + 1}</h3>
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">عنوان مقاله</label>
-                <input type="text" name="articles[${articleIndex}][title]"
-                    class="mt-1 block w-full border rounded-md p-2 dark:bg-gray-700 dark:text-white" placeholder="عنوان مقاله">
+                <input type="text" name="articles[${index}][title]" class="mt-1 block w-full border rounded-md p-2 dark:bg-gray-700 dark:text-white" placeholder="عنوان مقاله">
             </div>
-
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">نویسنده مقاله</label>
-                <input type="text" name="articles[${articleIndex}][author]"
-                    class="mt-1 block w-full border rounded-md p-2 dark:bg-gray-700 dark:text-white" placeholder="نویسنده مقاله">
+                <input type="text" name="articles[${index}][author]" class="mt-1 block w-full border rounded-md p-2 dark:bg-gray-700 dark:text-white" placeholder="نویسنده مقاله">
             </div>
-
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">چکیده مقاله</label>
-                <textarea name="articles[${articleIndex}][abstract]"
-                    class="mt-1 block w-full border rounded-md p-2 dark:bg-gray-700 dark:text-white" placeholder="چکیده مقاله"></textarea>
+                <textarea name="articles[${index}][abstract]" class="mt-1 block w-full border rounded-md p-2 dark:bg-gray-700 dark:text-white" placeholder="چکیده مقاله"></textarea>
             </div>
-
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">متن مقاله</label>
-                <textarea name="articles[${articleIndex}][text]"
-                    class="mt-1 block w-full border rounded-md p-2 dark:bg-gray-700 dark:text-white" placeholder="متن مقاله"></textarea>
+                <textarea name="articles[${index}][body]" class="mt-1 block w-full border rounded-md p-2 dark:bg-gray-700 dark:text-white" placeholder="متن مقاله"></textarea>
             </div>
-
-            <button type="button" class="remove-article bg-red-500 text-white px-4 py-2 rounded w-full sm:w-auto hover:bg-red-600 transition"
-                onclick="this.closest('.article-form').remove()">
+            <button type="button" class="remove-article bg-red-500 text-white px-4 py-2 rounded w-full sm:w-auto hover:bg-red-600 transition" onclick="this.closest('.article-form').remove(); resetArticleIndexes();">
                 حذف مقاله
             </button>
-        </div>
         `;
-        const container = document.createElement('div');
-        container.innerHTML = template.trim();
-        articlesContainer.appendChild(container.firstChild);
+        return div;
+    }
+
+    addArticleButton.addEventListener('click', () => {
+        articlesContainer.appendChild(createArticleForm(articleIndex));
         articleIndex++;
     });
 });

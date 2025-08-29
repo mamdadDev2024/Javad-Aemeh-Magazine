@@ -30,8 +30,8 @@ Route::get("/news/{Khabar:slug}", [ShowController::class, "newsShow"])->name("Kh
 // CHANGED: Route download to dedicated invokable controller
 Route::get('/download', DownloadController::class)->name('download');
 Route::post('/create-comment/{model}/{contentId}', CommentController::class)->name('create.comment');
-Route::get('/contact-us', [MainController::class, "contact"])->middleware("auth")->name("contact");
-Route::post('/contact-us', [MainController::class, "doContact"])->middleware("auth")->name("do.contact");
+Route::get('/contact-us', [MainController::class, "contact"])->name("contact");
+Route::post('/contact-us', [MainController::class, "doContact"])->name("do.contact");
 Route::post("/like/{type}/{id}", [LikeController::class, "toggleLike"])->middleware("auth")->name("toggle.like");
 Route::get("/search", SearchController::class)->name("search");
 Route::post("/profile", [UserController::class, "profile"])->middleware("auth")->name("profile");

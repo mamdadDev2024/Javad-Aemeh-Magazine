@@ -1,6 +1,6 @@
 @extends('layouts.default')
 
-@section('title', $article->title)
+@section('title', $item->title)
 
 @section('styles')
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
@@ -11,34 +11,34 @@
         <div class="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
             <div class="p-5">
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100" data-aos="fade-right">
-                    {{ $article->title }}
+                    {{ $item->title }}
                 </h1>
                 <div class="flex justify-between articles-center mt-2">
                     <span class="text-sm text-gray-500 dark:text-gray-400">
-                        نویسنده: {{ $article->author }}
+                        نویسنده: {{ $item->author }}
                     </span>
                     <span class="text-sm text-gray-500 dark:text-gray-400">
-                        تعداد نظرات: {{ $article->comments->count() }}
+                        تعداد نظرات: {{ $item->comments->count() }}
                     </span>
                 </div>
                 <p class="mt-4 text-gray-700 dark:text-gray-300" data-aos="fade-up">
                     <span class=" font-bold text-lg">چکیده</span><br>
-                    {!! nl2br(e($article->abstract)) !!}
+                    {!! nl2br(e($item->abstract)) !!}
                 </p>
                 <p class="mt-4 text-right text-gray-700 dark:text-gray-300" data-aos="fade-up">
                     <span class=" font-bold text-lg">متن</span><br>
                     <!-- CHANGED: Use body instead of text to match schema -->
-                    {!! nl2br(e($article->body)) !!}
+                    {!! nl2br(e($item->body)) !!}
                 </p>
                 <!-- Like and Views -->
                 <div class="flex articles-center justify-between mt-5">
                     <span class="text-sm text-gray-500 dark:text-gray-400">
-                        بازدید: {{ $article->views_count }}
+                        بازدید: {{ $item->views_count }}
                     </span>
-                    <form method="POST" action="{{ route('toggle.like', ['id' => $article->id, 'type' => strtolower($type)]) }}">
+                    <form method="POST" action="{{ route('toggle.like', ['id' => $item->id, 'type' => strtolower($type)]) }}">
                         @csrf
                         <button class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
-                            لایک: {{ $article->like_count }}
+                            لایک: {{ $item->like_count }}
                         </button>
                     </form>
                 </div>
@@ -49,7 +49,7 @@
         <section id="comments" class="max-w-4xl mx-auto mt-10 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-5"
             data-aos="fade-left">
             <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">نظرات</h2>
-            @forelse ($article->comments as $comment)
+            @forelse ($item->comments as $comment)
                 <div class="mt-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
                     <p class="text-sm text-gray-500 dark:text-gray-400">{{ $comment->created_at->diffForHumans() }}</p>
                     <!-- CHANGED: Align with body column -->
@@ -60,7 +60,7 @@
             @endforelse
 
             @auth
-                <form method="POST" action="{{ route('create.comment', ["contentId" => $article->id , "model" => $type]) }}" class="mt-5">
+                <form method="POST" action="{{ route('create.comment', ["contentId" => $item->id , "model" => $type]) }}" class="mt-5">
                     @csrf
                     <!-- CHANGED: Align request field name with backend -->
                     <textarea name="body" rows="3" class="w-full p-3 rounded-lg dark:bg-gray-700 dark:text-gray-300"
@@ -88,7 +88,7 @@
                             class="w-16 h-16 object-cover rounded-lg">
                         <div class="ml-4">
                             <!-- CHANGED: Build route name dynamically in PHP to avoid literal string -->
-                            <a href="{{ route(strtolower($type).'.show', $related['slug']) }}"
+                            <a href="{{ route($type.'.show', $related['slug']) }}"
                                 class="text-blue-500 dark:text-orange-300 hover:underline">
                                 {{ Illuminate\Support\Str::limit($related['title'], 30) }}
                             </a>

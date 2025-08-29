@@ -12,10 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('categorizables', function (Blueprint $table) {
-            $table->id();
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->morphs('categorizable'); // این نوع ستون، دو فیلد polymorphic ایجاد می‌کند: categorizable_id و categorizable_type
-            $table->timestamps();
+            $table->morphs('categorizable');
         });
 
     }

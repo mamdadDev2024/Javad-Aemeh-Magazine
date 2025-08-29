@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('contacts', function (Blueprint $table) {
             $table->id();
             $table->boolean("status")->default(0);
+            $table->unsignedBigInteger("phone");
             $table->text("body");
             $table->foreignId("user_id")->constrained()->cascadeOnDelete();
             $table->timestamps();

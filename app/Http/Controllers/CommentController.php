@@ -2,13 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\SweetAlert2;
 use App\Http\Requests\Comment\CreateCommentRequest;
-use App\Models\Article;
-use App\Models\Event;
-use App\Models\Khabar;
 use Devrabiul\ToastMagic\Facades\ToastMagic;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 

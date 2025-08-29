@@ -76,9 +76,8 @@ class AuthController extends Controller
     }
     public function reset(Request $request)
     {
-        // CHANGED: Use a proper FormRequest for reset with password confirmation
-        // NOTE: Route signature updated to inject GuestChangePasswordRequest instead of Request
         $data = $request->validate([
+            'g-recaptcha-response' => 'required|captcha',
             'password' => 'required|string|min:6|max:50|confirmed',
         ]);
         if (!session()->has('reset_user_id')) {
@@ -101,7 +100,6 @@ class AuthController extends Controller
     }
     public function register(RegisterRequest $request)
     {
-        // CHANGED: Validate using RegisterRequest instead of empty validate()
         $data = $request->validated();
 
         try {
@@ -126,7 +124,6 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::logout();
-        // CHANGED: Redirect after logout for consistent UX
         ToastMagic::success("خروج", "با موفقیت از حساب خود خارج شدید");
         return redirect()->route('home');
     }

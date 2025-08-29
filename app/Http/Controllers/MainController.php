@@ -3,53 +3,74 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ContactRequest;
-use App\Http\Requests\SearchRequest;
-use App\Models\{Article, Contact, Event, File, Khabar, Magazine, Report, Section};
+use App\Models\{Contact, Event, Khabar, Magazine, Section};
 use Devrabiul\ToastMagic\Facades\ToastMagic;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{Auth, Log, Storage};
+use Illuminate\Support\Facades\{Auth, Log};
 use Jenssegers\Agent\Facades\Agent;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class MainController extends Controller
 {
+
     public function landing()
     {
         $isMobile = Agent::isMobile();
 
-        $magazines = $this->adjustSlides(Magazine::limit(5)->get()->toArray(), 3, $isMobile);
-        $events = $this->adjustSlides(Event::limit(5)->get()->toArray(), 4, $isMobile);
-        $khabars = $this->adjustSlides(Khabar::limit(5)->get()->toArray(), 4, $isMobile);
+        // Cache data retrieval
+        $magazines = cache()->remember('landing:magazines', 900, function () {
+            return Magazine::latest()->limit(5)->get();
+        });
 
-        $sections = Section::all()->keyBy("name")->toArray();
+        $events = cache()->remember('landing:events', 900, function () {
+            return Event::select(['id', 'title', 'image', 'slug'])
+                        ->latest()
+                        ->limit(5)
+                        ->get();
+        });
+
+        $khabars = cache()->remember('landing:khabars', 900, function () {
+            return Khabar::select(['id', 'title', 'image', 'slug'])
+                        ->latest()
+                        ->limit(5)
+                        ->get();
+        });
+
+        // Get default image from sections
+        $sections = Section::all()->keyBy('name');
+        $defaultImage = $sections->get('defaultContentImage')->value ?? 'default-image-path.jpg';
+
+        // Adjust slides using the default image
+        $magazines = $this->adjustSlides($magazines, 3, $isMobile, $defaultImage);
+        $events    = $this->adjustSlides($events, 4, $isMobile, $defaultImage);
+        $khabars   = $this->adjustSlides($khabars, 4, $isMobile, $defaultImage);
 
         return view('main.landing', compact('sections', 'events', 'magazines', 'khabars', 'isMobile'));
     }
 
-    private function adjustSlides(array $items, int $limit, bool $isMobile): array
+    private function adjustSlides($items, int $limit, bool $isMobile, string $defaultImage)
     {
-        $count = count($items);
+        $count = $items->count();
+
+        if ($count === 0) {
+            return collect();
+        }
 
         if (!$isMobile && $count < $limit) {
-            $defaultImage = asset(optional(Section::where("name", "defaultContentImage")->first())->content ?? 'default.jpg');
             $defaultSlide = [
-                'title' => 'موسسه جواد الائمه',
-                'body' => '',
-                'image' => $defaultImage,
-                'slug' => null,
+                'title'      => 'موسسه جواد الائمه',
+                'image'      => $defaultImage,
+                'slug'       => null,
+                'is_default' => true,
             ];
-            $items = array_merge($items, array_fill(0, $limit - $count, $defaultSlide));
+
+            $items = $items->concat(array_fill(0, $limit - $count, $defaultSlide));
         }
 
         if ($isMobile && $count > $limit) {
-            $items = array_slice($items, 0, $limit);
+            $items = $items->take($limit);
         }
 
         return $items;
     }
-
-
-
 
     public function contact()
     {
@@ -60,12 +81,16 @@ class MainController extends Controller
     {
         $data = $request->validated();
 
-        Auth::user()->contacts()->create([
-            "body" => $data["body"]
-        ]);
+        try {
+            Auth::user()->contacts()->create($data);
 
-        ToastMagic::success("ثبت شد", "فرم ارسال شد");
-        return redirect()->route("home");
+            ToastMagic::success("ثبت شد", "فرم با موفقیت ارسال شد");
+            return redirect()->route("home");
+
+        } catch (\Throwable $e) {
+            report($e);
+            ToastMagic::error("خطا", "در ارسال فرم خطایی رخ داد");
+            return back()->withInput();
+        }
     }
-
 }

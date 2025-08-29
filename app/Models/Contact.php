@@ -11,18 +11,11 @@ class Contact extends Model
 
     protected $fillable = [
         "body",
-        "number"
+        "phone"
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function replay($reply)
-    {
-        $this->replay = $reply;
-        $this->status = 1;
-        $this->save();
     }
 }

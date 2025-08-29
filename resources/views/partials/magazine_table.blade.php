@@ -16,7 +16,7 @@
                 @foreach ($items as $item)
                     <tr class="border-b hover:bg-gray-50">
                         <td class="p-2 text-center">
-                            <img src="{{ $item->image ? asset('storage/' . $item->image) : asset('images/placeholder.png') }}"
+                            <img src="{{ $item->image ? asset( $item->image) : asset('images/placeholder.png') }}"
                                  alt="{{ $item->title }} - image"
                                  class="h-12 w-12 sm:h-16 sm:w-16 rounded-full object-cover mx-auto">
                         </td>

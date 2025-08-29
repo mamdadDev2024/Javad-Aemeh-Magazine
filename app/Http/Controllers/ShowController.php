@@ -2,12 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\SweetAlert2;
-use App\Models\Article;
-use App\Models\Category;
-use App\Models\Khabar;
-use App\Models\Event;
-use App\Models\Magazine;
+use App\Models\{Article, Category, Khabar, Event, Magazine};
 use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -16,107 +11,95 @@ class ShowController extends Controller
 {
     public function articleShow($slug)
     {
-
-        return $this->handleArticleShow($slug, Article::class ,'Article');
+        return $this->handleShow($slug, Article::class, 'Article', 'show.ArticleShow');
     }
+
     public function magazineShow($slug)
     {
-
-        return $this->handleShowMagazine($slug, Magazine::class ,'Magazine');
+        return $this->handleMagazineShow($slug, Magazine::class, 'Magazine', 'show.MagazineShow');
     }
+
     public function newsShow($slug)
     {
-        return $this->handleShow($slug, Khabar::class , 'Khabar');
+        return $this->handleShow($slug, Khabar::class, 'Khabar', 'show.ContentShow');
     }
+
     public function eventShow($slug)
     {
-        return $this->handleShow($slug, Event::class , 'Event');
+        return $this->handleShow($slug, Event::class, 'Event', 'show.ContentShow');
     }
-    private function handleArticleShow($slug, $model , string $type)
+
+    protected static function loadItem(string $model, string $slug, array $relations = [])
+    {
+        $item = $model::where("slug", $slug)
+            ->withCount(['comments', 'views'])
+            ->with($relations)
+            ->first();
+
+        if (!$item) {
+            return null;
+        }
+
+        if (Auth::check()) {
+            $item->views()->firstOrCreate([
+                'ip_address' => request()->ip(),
+                'user_id'    => Auth::id()
+            ]);
+        }
+
+        $item['like_count'] = $item->likers()->count();
+
+        return $item;
+    }
+    private function handleShow($slug, $model, string $type, string $view)
     {
         try {
-            $article = $model::where("slug" , $slug)
-                ->withCount('comments', 'views')
-                ->with([
+            $item = self::loadItem(
+                $model,
+                $slug,
+                [
                     'user',
-                    'comments' => function ($query) {
-                        $query->where('status', 1);
-                    },
-                ])
-                ->first();
-            if (!$article) {
+                    'comments' => fn($q) => $q->where('status', 1),
+                ]
+            );
+
+            if (!$item) {
                 ToastMagic::error('موجود نیست!', 'شاید آدرسو اشتباه رفتی!');
                 return redirect()->route('home');
             }
+            $categoryIds = $item->categories()->pluck('id');
+            $relateds = $categoryIds->isNotEmpty()
+                ? $model::whereHas('categories', fn($q) => $q->whereIn('id', $categoryIds))
+                    ->where('id', '!=', $item->id)
+                    ->with('user')->limit(10)->get()
+                : $model::with('user')->limit(10)->get();
 
+            $categories = $item->categories()->get();
 
-            if (Auth::check()) {
-                $article->views()->firstOrCreate([
-                    'ip_address' => request()->ip(),
-                    'user_id' => Auth::id()
-                ]);
-            }
-
-            $article['like_count'] = $article->likers()->count();
-            $relateds = $article->categories()->first()
-            ? $article->categories()->first()->articles()->where('status', 1)->with('user')->limit(10)->get()
-            : $model::where('status', 1)->with('user')->limit(10)->get();
-
-            return view('show.ArticleShow', compact('article', 'relateds', 'type'));
+            return view($view, compact('item', 'relateds', 'type', 'categories'));
         } catch (\Throwable $th) {
-            Log::error("Error in show logic for {$type}: " . $th->getMessage());
+            Log::error("Error in show logic for {$type}", [
+                'slug'    => $slug,
+                'user_id' => Auth::id(),
+                'error'   => $th->getMessage(),
+                'line'    => $th->getLine(),
+                'file'    => $th->getFile(),
+            ]);
             ToastMagic::error('موجود نیست!', 'شاید آدرسو اشتباه رفتی!');
             return redirect()->back();
         }
     }
-    private function handleShow($slug, $model , string $type)
+
+    private function handleMagazineShow($slug, $model, string $type, string $view)
     {
         try {
-            $item = $model::where("slug" , $slug)
-                ->withCount('comments', 'views')
-                ->with([
-                    'user',
-                    'comments' => function ($query) {
-                        $query->where('status', 1);
-                    },
-                ])
-                ->first();
-            if (!$item) {
-                ToastMagic::error('موجود نیست!', 'شاید آدرسو اشتباه رفتی!');
-                return redirect()->back();
-            }
-
-
-            if (Auth::check()) {
-                $item->views()->firstOrCreate([
-                    'ip_address' => request()->ip(),
-                    'user_id' => Auth::id()
-                ]);
-            }
-
-            $item['like_count'] = $item->likers()->count();
-            $relateds = $item->categories()->first()
-            ? $item->categories()->first()->articles()->with('user')->limit(10)->get()
-            : $model::with('user')->limit(10)->get();
-            $categories = $item->categories()->get()->toArray();
-            return view('show.ContentShow', compact('item', 'relateds', 'type' , "categories"));
-        } catch (\Throwable $th) {
-            Log::error("Error in show logic for {$type}: " . $th->getMessage());
-            ToastMagic::error('موجود نیست!', 'شاید آدرسو اشتباه رفتی!');
-            return redirect()->back();
-        }
-    }
-    private function handleShowMagazine($slug, $model , string $type)
-    {
-        try {
-            $magazine = $model::where("slug" , $slug)
-                ->withCount('comments', "likers as like_count" , 'views')
+            $magazine = $model::where("slug", $slug)
+                ->withCount(['comments', 'views'])
+                ->withCount(['likers as like_count'])
                 ->with([
                     'user',
                     'articles',
-                    'comments' => function ($query) {
-                        $query->where('status', 1);
-                    },
+                    'comments' => fn($q) => $q->where('status', 1),
                 ])
                 ->first();
 
@@ -125,27 +108,37 @@ class ShowController extends Controller
                 return redirect()->back();
             }
 
-
             if (Auth::check()) {
                 $magazine->views()->firstOrCreate([
                     'ip_address' => request()->ip(),
-                    'user_id' => Auth::id()
+                    'user_id'    => Auth::id(),
                 ]);
             }
 
-            $relateds = $magazine->categories()->first()
-            ? $magazine->categories()->first()->articles()->with('user')->limit(10)->get()->except($magazine->id)
-            : $model::with('user')->limit(10)->get();
-            $categories = $magazine->categories()->get()->toArray();
-            return view('show.MagazineShow', compact('magazine', 'relateds', 'type' , "categories"));
+            $categoryIds = $magazine->categories()->pluck('id');
+            $relateds = $categoryIds->isNotEmpty()
+                ? $model::whereHas('categories', fn($q) => $q->whereIn('id', $categoryIds))
+                    ->where('id', '!=', $magazine->id)
+                    ->with('user')->limit(10)->get()
+                : $model::with('user')->limit(10)->get();
+
+            $categories = $magazine->categories()->get();
+
+            return view($view, compact('magazine', 'relateds', 'type', 'categories'));
         } catch (\Throwable $th) {
-            Log::error("Error in show logic for {$type}: " . $th->getMessage());
+            Log::error("Error in show logic for {$type}", [
+                'slug'    => $slug,
+                'user_id' => Auth::id(),
+                'error'   => $th->getMessage(),
+                'line'    => $th->getLine(),
+                'file'    => $th->getFile(),
+            ]);
             ToastMagic::error('موجود نیست!', 'شاید آدرسو اشتباه رفتی!');
             return redirect()->back();
         }
     }
 
-    // CHANGED: Add simple preview methods referenced in routes (admin only via middleware)
+    // --- Preview Methods (for admin only) ---
     public function articlePreview($id)
     {
         $article = Article::findOrFail($id);
@@ -159,7 +152,7 @@ class ShowController extends Controller
         $item = Event::findOrFail($id);
         $type = 'Event';
         $relateds = collect();
-        $categories = $item->categories()->get()->toArray();
+        $categories = $item->categories()->get();
         return view('show.ContentShow', compact('item', 'relateds', 'type', 'categories'));
     }
 
@@ -168,7 +161,7 @@ class ShowController extends Controller
         $item = Khabar::findOrFail($id);
         $type = 'Khabar';
         $relateds = collect();
-        $categories = $item->categories()->get()->toArray();
+        $categories = $item->categories()->get();
         return view('show.ContentShow', compact('item', 'relateds', 'type', 'categories'));
     }
 }

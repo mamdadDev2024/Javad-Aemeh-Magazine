@@ -11,7 +11,7 @@ class LoginRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return !auth()->check();
     }
 
     /**
@@ -36,3 +36,4 @@ class LoginRequest extends FormRequest
         ];
     }
 }
+\

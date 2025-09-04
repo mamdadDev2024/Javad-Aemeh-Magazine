@@ -11,6 +11,15 @@
             @csrf
             <h2 class=" text-lg font-bold text-white flex justify-center">تماس باما</h2>
             <div>
+                <label for="phone" class="block text-sm font-medium text-white">شماره تلفن همراه</label>
+                <div class="mt-1">
+                    <input name="phone" id="phone" type="text" class="transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 px-3 py-2 text-white bg-slate-700 rounded-lg w-full placeholder-gray-300" placeholder='شماره تلفن همراه خود را وارد کنید' required>
+                </div>
+                @error('phone')
+                    <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
+                @enderror
+            </div>
+            <div>
                 <label for="body" class="block text-sm font-medium text-white">متن</label>
                 <div class="mt-1">
                     <textarea name="body" id="body" class="transition-all max-h-96 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 px-3 py-2 text-white bg-slate-700 rounded-lg w-full placeholder-gray-300" placeholder="متن خود را بنویسید . در اسرع وقت رسیدگی میشود" required></textarea>

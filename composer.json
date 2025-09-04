@@ -12,6 +12,7 @@
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "mews/purifier": "^3.4",
+        "nwidart/laravel-modules": "*",
         "overtrue/laravel-like": "^5.3",
         "spatie/laravel-permission": "^6.9"
     },

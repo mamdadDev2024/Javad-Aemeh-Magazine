@@ -82,8 +82,12 @@ class MainController extends Controller
         $data = $request->validated();
 
         try {
-            Auth::user()->contacts()->create($data);
-
+            if (auth()->check()){
+                Auth::user()->contacts()->create($data);
+            }
+            else{
+                Contact::create($data);
+            }
             ToastMagic::success("ثبت شد", "فرم با موفقیت ارسال شد");
             return redirect()->route("home");
 

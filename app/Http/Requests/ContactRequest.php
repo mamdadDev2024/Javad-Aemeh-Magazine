@@ -11,7 +11,7 @@ class ContactRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check();
+        return true;
     }
 
     /**
@@ -24,6 +24,7 @@ class ContactRequest extends FormRequest
         return [
             'g-recaptcha-response' => 'required|captcha',
             "body" => "required|min:10|max:10000|string",
+            "phone" => "required|numeric"
         ];
     }
 }

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->boolean("status")->default(0);
             $table->unsignedBigInteger("phone");
             $table->text("body");
-            $table->foreignId("user_id")->constrained()->cascadeOnDelete();
+            $table->foreignId("user_id")->nullable()->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

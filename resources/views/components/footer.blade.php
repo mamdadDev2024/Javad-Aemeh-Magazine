@@ -6,7 +6,7 @@
     $links = Link::all()->toArray();
 @endphp
 <footer data-aos="fade-up"
-    class="w-full flex flex-col min-h-96 rounded-t-xl text-white bg-sky-600 dark:bg-gray-700">
+    class="w-full flex flex-col mt-3 min-h-96 rounded-t-xl text-white bg-sky-600 dark:bg-gray-700">
     <div data-aos="fade-down" class="bg-transparent mx-auto">
         @php
             $section = App\Models\Section::where("name", "titleFooter")->first();

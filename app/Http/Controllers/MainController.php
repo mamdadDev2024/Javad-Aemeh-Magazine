@@ -16,23 +16,17 @@ class MainController extends Controller
         $isMobile = Agent::isMobile();
 
         // Cache data retrieval
-        $magazines = cache()->remember('landing:magazines', 900, function () {
-            return Magazine::latest()->limit(5)->get();
-        });
+        $magazines = Magazine::latest()->limit(5)->get();
 
-        $events = cache()->remember('landing:events', 900, function () {
-            return Event::select(['id', 'title', 'image', 'slug'])
+        $events = Event::select(['id', 'title', 'image', 'slug'])
                         ->latest()
                         ->limit(5)
                         ->get();
-        });
 
-        $khabars = cache()->remember('landing:khabars', 900, function () {
-            return Khabar::select(['id', 'title', 'image', 'slug'])
+        $khabars = Khabar::select(['id', 'title', 'image', 'slug'])
                         ->latest()
                         ->limit(5)
                         ->get();
-        });
 
         // Get default image from sections
         $sections = Section::all()->keyBy('name');
@@ -49,10 +43,6 @@ class MainController extends Controller
     private function adjustSlides($items, int $limit, bool $isMobile, string $defaultImage)
     {
         $count = $items->count();
-
-        if ($count === 0) {
-            return collect();
-        }
 
         if (!$isMobile && $count < $limit) {
             $defaultSlide = [

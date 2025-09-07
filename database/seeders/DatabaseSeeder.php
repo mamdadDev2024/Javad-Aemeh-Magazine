@@ -23,8 +23,8 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        if (app()->environment('local')) {
-            $this->call(LocalSeeder::class);
-        }
+        // if (app()->environment('local')) {
+        //     $this->call(LocalSeeder::class);
+        // }
     }
 }

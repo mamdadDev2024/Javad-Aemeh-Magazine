@@ -22,9 +22,9 @@
             <tbody>
                 @foreach ($contacts as $contact)
                     <tr class="hover:bg-gray-50 transition duration-300">
-                        <td class="border border-gray-300 p-2">{{ $contact->user->username }}</td>
+                        <td class="border border-gray-300 p-2">{{ $contact->user?->username ?? 'ناشناس' }}</td>
                         <td class="border border-gray-300 p-2">{{ $contact->body }}</td>
-                        <td class="border border-gray-300 p-2">{{ $contact->number }}</td>
+                        <td class="border border-gray-300 p-2">{{ $contact->phone }}</td>
                         <td class="border border-gray-300 p-2">{{ $contact->created_at->diffForHumans() }}</td>
                         <td class="border border-gray-300 p-2">
                             <form action="{{ route('admin.contact.delete', $contact->id) }}" method="POST" class="inline-block"

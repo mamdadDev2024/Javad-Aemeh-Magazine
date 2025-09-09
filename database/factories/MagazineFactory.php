@@ -23,6 +23,7 @@ class MagazineFactory extends Factory
             'slug' => Str::slug($title),
             'pdf' => fake()->url(),
             'image' => fake()->imageUrl(),
+            'user_id' => \App\Models\User::factory(),
         ];
     }
 }

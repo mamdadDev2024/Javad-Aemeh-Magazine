@@ -8,8 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Comment extends Model
 {
     use HasFactory;
-    // CHANGED: Align fillable with DB column
-    protected $fillable = ['body', 'user_id' , "status"];
+    protected $fillable = ['body', 'user_id' , "status" , 'commentable_id' , 'commentable_type'];
 
     public function commentable()
     {

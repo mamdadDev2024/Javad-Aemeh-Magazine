@@ -20,11 +20,6 @@ class Article extends Model
         "url"
     ];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
     public function magazine()
     {
         return $this->belongsTo(Magazine::class);

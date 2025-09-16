@@ -30,7 +30,7 @@ class MainController extends Controller
 
         // Get default image from sections
         $sections = Section::all()->keyBy('name');
-        $defaultImage = $sections->get('defaultContentImage')->value ?? 'default-image-path.jpg';
+        $defaultImage = $sections->get('defaultContentImage')->content ?? 'default-image-path.jpg';
 
         // Adjust slides using the default image
         $magazines = $this->adjustSlides($magazines, 3, $isMobile, $defaultImage);

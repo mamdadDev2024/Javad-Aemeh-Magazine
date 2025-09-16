@@ -8,8 +8,8 @@
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite('resources/css/app.css')
     @else
-        <link rel="stylesheet" href="{{ asset('build/assets/app-1.css') }}">
-        <link rel="stylesheet" href="{{ asset('build/assets/app-2.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/app1.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/app2.css') }}">
     @endif
 
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/favicon.ico') }}">
@@ -58,7 +58,7 @@
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite('resources/js/app.js')
     @else
-        <script src="{{ asset('build/assets/app.js') }}"></script>
+        <script src="{{ asset('assets/app.js') }}"></script>
     @endif
 
     @yield('scripts')

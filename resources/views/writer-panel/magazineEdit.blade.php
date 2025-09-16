@@ -93,7 +93,7 @@
 
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
     // Overlay لودینگ هنگام ارسال فرم
     document.getElementById("myForm").addEventListener("submit", function() {
@@ -109,32 +109,91 @@
             const newIndex = articlesContainer.querySelectorAll('.article-form').length;
 
             const template = `
-            <div class="article-form border rounded-md p-4 mb-4 bg-gray-100 dark:bg-gray-800">
+            <div class="article-form border rounded-md p-4 mb-4 bg-gray-100 dark:bg-gray-800 dark:border-gray-700">
                 <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">مقاله شماره ${newIndex + 1}</h3>
-
+                <input type="hidden" name="articles[${newIndex}][id]" value="">
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">عنوان مقاله</label>
-                    <input type="text" name="articles[${newIndex}][title]" class="mt-1 block w-full border rounded-md p-2 dark:bg-gray-700 dark:text-white">
+                    <label for="articles_${newIndex}_title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">عنوان مقاله</label>
+                    <input type="text" name="articles[${newIndex}][title]" id="articles_${newIndex}_title" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                 </div>
-
+                <div class="mb-6">
+                    <label for="articles_${newIndex}_pdf" class="block text-sm font-medium text-gray-700 dark:text-gray-300">فایل مقاله</label>
+                    <input type="file" name="articles[${newIndex}][addOn]" id="articles_${newIndex}_pdf" accept=".pdf,.docx" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+                </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">چکیده مقاله</label>
-                    <textarea name="articles[${newIndex}][abstract]" class="mt-1 block w-full border rounded-md p-2 dark:bg-gray-700 dark:text-white"></textarea>
+                    <label for="articles_${newIndex}_author" class="block text-sm font-medium text-gray-700 dark:text-gray-300">نویسنده مقاله</label>
+                    <input type="text" name="articles[${newIndex}][author]" id="articles_${newIndex}_author" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                 </div>
-
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">متن مقاله</label>
-                    <textarea name="articles[${newIndex}][text]" class="mt-1 block w-full h-36 border rounded-md p-2 dark:bg-gray-700 dark:text-white"></textarea>
+                    <label for="articles_${newIndex}_abstract" class="block text-sm font-medium text-gray-700 dark:text-gray-300">چکیده مقاله</label>
+                    <textarea name="articles[${newIndex}][abstract]" id="articles_${newIndex}_abstract" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"></textarea>
                 </div>
-
-                <button type="button" class="remove-article bg-red-500 text-white px-4 py-2 rounded w-full sm:w-auto hover:bg-red-600 transition"
-                        onclick="this.closest('.article-form').remove();">
+                <div class="mb-4">
+                    <label for="articles_${newIndex}_body" class="block text-sm font-medium text-gray-700 dark:text-gray-300">متن مقاله</label>
+                    <textarea name="articles[${newIndex}][body]" id="articles_${newIndex}_body" class="mt-1 block w-full h-36 border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"></textarea>
+                </div>
+                <button type="button" class="remove-article bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded w-full sm:w-auto dark:bg-red-600 dark:hover:bg-red-700 transition duration-300"
+                        onclick="this.closest('.article-form').remove(); resetArticleIndexes();">
                     حذف مقاله
                 </button>
             </div>
             `;
             articlesContainer.insertAdjacentHTML('beforeend', template);
         });
+
+        function resetArticleIndexes() {
+            const articles = document.querySelectorAll('.article-form');
+            console.log(articles);
+            
+            articles.forEach((article, index) => {
+                // Update heading
+                const h3 = article.querySelector('h3');
+                if (h3) h3.textContent = `مقاله شماره ${index + 1}`;
+                // Update hidden id
+                const hiddenId = article.querySelector('input[type="hidden"]');
+                if (hiddenId) hiddenId.name = `articles[${index}][id]`;
+                // Update title
+                const titleInput = article.querySelector('input[name*="title"]');
+                if (titleInput) {
+                    titleInput.name = `articles[${index}][title]`;
+                    titleInput.id = `articles_${index}_title`;
+                    const titleLabel = article.querySelector('label[for*="title"]');
+                    if (titleLabel) titleLabel.setAttribute('for', `articles_${index}_title`);
+                }
+                // Update addOn
+                const addOnInput = article.querySelector('input[name*="addOn"]');
+                if (addOnInput) {
+                    addOnInput.name = `articles[${index}][addOn]`;
+                    addOnInput.id = `articles_${index}_pdf`;
+                    const addOnLabel = article.querySelector('label[for*="pdf"]');
+                    if (addOnLabel) addOnLabel.setAttribute('for', `articles_${index}_pdf`);
+                }
+                // Update author
+                const authorInput = article.querySelector('input[name*="author"]');
+                if (authorInput) {
+                    authorInput.name = `articles[${index}][author]`;
+                    authorInput.id = `articles_${index}_author`;
+                    const authorLabel = article.querySelector('label[for*="author"]');
+                    if (authorLabel) authorLabel.setAttribute('for', `articles_${index}_author`);
+                }
+                // Update abstract
+                const abstractTextarea = article.querySelector('textarea[name*="abstract"]');
+                if (abstractTextarea) {
+                    abstractTextarea.name = `articles[${index}][abstract]`;
+                    abstractTextarea.id = `articles_${index}_abstract`;
+                    const abstractLabel = article.querySelector('label[for*="abstract"]');
+                    if (abstractLabel) abstractLabel.setAttribute('for', `articles_${index}_abstract`);
+                }
+                // Update body
+                const bodyTextarea = article.querySelector('textarea[name*="body"]');
+                if (bodyTextarea) {
+                    bodyTextarea.name = `articles[${index}][body]`;
+                    bodyTextarea.id = `articles_${index}_body`;
+                    const bodyLabel = article.querySelector('label[for*="body"]');
+                    if (bodyLabel) bodyLabel.setAttribute('for', `articles_${index}_body`);
+                }
+            });
+        }
     });
 </script>
-@endsection
+@endpush

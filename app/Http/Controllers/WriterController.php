@@ -186,6 +186,7 @@ class WriterController extends Controller
             "addOn" => "nullable|file|mimes:pdf,docx|max:10000",
             "category" => "nullable|array|exists:categories,id",
             "articles" => "nullable|array",
+            "articles.*.addOn" => "nullable|file|mimes:pdf,docx|max:10000",
             "articles.*.title" => "required|min:6|max:100",
             "articles.*.author" => "required|string|min:2|max:50",
             "articles.*.abstract" => "required|min:15|max:10000",

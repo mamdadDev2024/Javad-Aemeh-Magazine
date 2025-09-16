@@ -45,12 +45,13 @@ class UserController extends Controller
 
     public function profile(UpdateUserRequest $request)
     {
-        if ($request->delete && Auth::check()) {
+        $data = $request->validated();
+
+        if ($data['delete'] && Auth::check()) {
             // CHANGED: Deleting account should be DELETE with CSRF; redirect to proper method
-            return redirect()->route("user.delete", Auth::id());
+            return $this->destroy(Auth::id());
         }
 
-        $data = $request->validated();
 
         $user = Auth::user();
 
@@ -83,7 +84,7 @@ class UserController extends Controller
 
     private function updateUserFields($user, array $data)
     {
-        foreach (['email', 'name', 'number', 'age'] as $field) {
+        foreach (['email', 'name' , 'number', 'age'] as $field) {
             if (array_key_exists($field, $data) && $data[$field] !== null) {
                 $user->{$field} = $data[$field];
             }

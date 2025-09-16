@@ -6,5 +6,4 @@ return [
     'options' => [
         'timeout' => 30,
     ],
-    'lang' => 'fa'
 ];

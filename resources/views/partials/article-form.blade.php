@@ -93,18 +93,3 @@
     </button>
 </div>
 
-@push('scripts')
-<script>
-function resetArticleIndexes() {
-    const forms = document.querySelectorAll('#articles-container .article-form');
-    forms.forEach((form, index) => {
-        form.querySelector('h3').innerText = `مقاله شماره ${index + 1}`;
-        form.querySelectorAll('input, textarea').forEach(el => {
-            if(el.type === 'file') return;
-            const name = el.getAttribute('name');
-            if (name) el.setAttribute('name', name.replace(/articles\[\d+\]/, `articles[${index}]`));
-        });
-    });
-}
-</script>
-@endpush

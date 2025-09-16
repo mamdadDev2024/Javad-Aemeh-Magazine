@@ -90,46 +90,79 @@
 
 @section('scripts')
 <script>
+// Global function for resetting article indexes
+function resetArticleIndexes() {
+    const forms = document.querySelectorAll('#articles-container .article-form');
+    forms.forEach((form, index) => {
+        // Update the heading
+        const heading = form.querySelector('h3');
+        if (heading) {
+            heading.innerText = `مقاله شماره ${index + 1}`;
+        }
+
+        // Update all form elements with name attributes
+        form.querySelectorAll('input, textarea, select').forEach(el => {
+            const name = el.getAttribute('name');
+            const id = el.getAttribute('id');
+
+            if (name && name.includes('articles[')) {
+                // Skip file inputs and hidden existing_file inputs
+                if (el.type === 'file' || name.includes('existing_file')) return;
+
+                // Update name attribute
+                const newName = name.replace(/articles\[\d+\]/, `articles[${index}]`);
+                el.setAttribute('name', newName);
+            }
+
+            if (id && id.includes('articles_')) {
+                // Update id attribute
+                const newId = id.replace(/articles_\d+_/, `articles_${index}_`);
+                el.setAttribute('id', newId);
+
+                // Update corresponding label's for attribute
+                const label = form.querySelector(`label[for="${id}"]`);
+                if (label) {
+                    label.setAttribute('for', newId);
+                }
+            }
+        });
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     let articleIndex = {{ old('articles') ? count(old('articles')) : 1 }};
+    // Ensure articleIndex is at least 1 if we have at least one form
+    if (articleIndex === 0) articleIndex = 1;
     const addArticleButton = document.getElementById('add-article-button');
     const articlesContainer = document.getElementById('articles-container');
 
-    function resetArticleIndexes() {
-        const forms = document.querySelectorAll('#articles-container .article-form');
-        forms.forEach((form, index) => {
-            form.querySelector('h3').innerText = `مقاله شماره ${index + 1}`;
-            form.querySelectorAll('input, textarea').forEach(el => {
-                const name = el.getAttribute('name');
-                if (!name) return;
-                if(el.type === 'file') return; // فایل را تغییر نده
-                el.setAttribute('name', name.replace(/articles\[\d+\]/, `articles[${index}]`));
-            });
-        });
-    }
-
     function createArticleForm(index) {
         const div = document.createElement('div');
-        div.className = 'article-form border rounded-md p-4 mb-4 bg-gray-100 dark:bg-gray-800';
+        div.className = 'article-form border rounded-md p-4 mb-4 bg-gray-100 dark:bg-gray-800 dark:border-gray-700';
         div.innerHTML = `
             <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">مقاله شماره ${index + 1}</h3>
+            <input type="hidden" name="articles[${index}][id]" value="">
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">عنوان مقاله</label>
-                <input type="text" name="articles[${index}][title]" class="mt-1 block w-full border rounded-md p-2 dark:bg-gray-700 dark:text-white" placeholder="عنوان مقاله">
+                <input type="text" name="articles[${index}][title]" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" placeholder="عنوان مقاله">
             </div>
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">نویسنده مقاله</label>
-                <input type="text" name="articles[${index}][author]" class="mt-1 block w-full border rounded-md p-2 dark:bg-gray-700 dark:text-white" placeholder="نویسنده مقاله">
+                <input type="text" name="articles[${index}][author]" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" placeholder="نویسنده مقاله">
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">فایل مقاله</label>
+                <input type="file" name="articles[${index}][addOn]" accept=".pdf,.docx" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
             </div>
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">چکیده مقاله</label>
-                <textarea name="articles[${index}][abstract]" class="mt-1 block w-full border rounded-md p-2 dark:bg-gray-700 dark:text-white" placeholder="چکیده مقاله"></textarea>
+                <textarea name="articles[${index}][abstract]" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" placeholder="چکیده مقاله"></textarea>
             </div>
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">متن مقاله</label>
-                <textarea name="articles[${index}][body]" class="mt-1 block w-full border rounded-md p-2 dark:bg-gray-700 dark:text-white" placeholder="متن مقاله"></textarea>
+                <textarea name="articles[${index}][body]" class="mt-1 block w-full h-36 border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" placeholder="متن مقاله"></textarea>
             </div>
-            <button type="button" class="remove-article bg-red-500 text-white px-4 py-2 rounded w-full sm:w-auto hover:bg-red-600 transition" onclick="this.closest('.article-form').remove(); resetArticleIndexes();">
+            <button type="button" class="remove-article bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded w-full sm:w-auto dark:bg-red-600 dark:hover:bg-red-700 transition duration-300" onclick="this.closest('.article-form').remove(); resetArticleIndexes();">
                 حذف مقاله
             </button>
         `;

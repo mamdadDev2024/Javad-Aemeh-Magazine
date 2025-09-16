@@ -291,7 +291,7 @@ class AdminController extends Controller
 
 
 
-    public function createModel(Request $request, string $model, string $successMessage, string $errorMessage, string $uniqueColumn = 'name')
+    function createModel(Request $request, string $model, string $successMessage, string $errorMessage, string $uniqueColumn = 'name')
     {
         $data = $request->validate([
             'g-recaptcha-response' => 'required|captcha',

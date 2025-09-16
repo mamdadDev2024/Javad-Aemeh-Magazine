@@ -14,7 +14,6 @@
         @include('partials.content_table', [
             'items' => $magazines,
             'title' => 'نشریات',
-            'editRoute' => 'writer.magazine.edit',
             'deleteRoute' => 'admin.magazine.delete',
             'showImage' => true,
             'showBody' => false,

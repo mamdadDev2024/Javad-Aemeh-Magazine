@@ -58,7 +58,6 @@ class ShowController extends Controller
                 $model,
                 $slug,
                 [
-                    'user',
                     'comments' => fn($q) => $q->where('status', 1),
                 ]
             );
@@ -71,8 +70,8 @@ class ShowController extends Controller
             $relateds = $categoryIds->isNotEmpty()
                 ? $model::whereHas('categories', fn($q) => $q->whereIn('id', $categoryIds))
                     ->where('id', '!=', $item->id)
-                    ->with('user')->limit(10)->get()
-                : $model::with('user')->limit(10)->get();
+                    ->limit(10)->get()
+                : $model::limit(10)->get();
 
             $categories = $item->categories()->get();
 

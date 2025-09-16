@@ -18,7 +18,9 @@
                             <th class="p-2">PDF</th>
                             <th class="p-2">WORD</th>
                         @endif
-                        <th class="p-2">عملیات</th>
+                        @if($editRoute ?? false)
+                            <th class="p-2">عملیات</th>
+                        @endif
                         <th class="p-2">حذف</th>
                     </tr>
                 </thead>
@@ -54,9 +56,11 @@
                                     @endempty
                                 </td>
                             @endif
-                            <td class="p-2">
-                                <a href="{{ route($editRoute, $item->slug) }}" class="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">ویرایش</a>
-                            </td>
+                            @if($editRoute ?? false)
+                                <td class="p-2">
+                                    <a href="{{ route($editRoute, $item->slug) }}" class="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">ویرایش</a>
+                                </td>
+                            @endif
                             <td class="p-2 text-center">
                                 <form action="{{ route($deleteRoute, $item->id) }}" method="POST" onsubmit="return confirm('آیا مطمئن هستید؟')" class="inline-block">
                                     @csrf
@@ -100,7 +104,9 @@
                         </div>
                     @endif
                     <div class="flex justify-between mt-2">
-                        <a href="{{ route($editRoute, $item->slug) }}" class="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition text-sm w-1/2 text-center">ویرایش</a>
+                        @if($editRoute ?? false)
+                            <a href="{{ route($editRoute, $item->slug) }}" class="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition text-sm w-1/2 text-center">ویرایش</a>
+                        @endif
                         <form action="{{ route($deleteRoute, $item->id) }}" method="POST" onsubmit="return confirm('آیا مطمئن هستید؟')" class="w-1/2">
                             @csrf
                             @method('DELETE')

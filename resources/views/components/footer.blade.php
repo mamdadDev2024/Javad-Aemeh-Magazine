@@ -7,18 +7,23 @@
 @endphp
 <footer data-aos="fade-up"
     class="w-full flex flex-col mt-3 min-h-96 rounded-t-xl text-white bg-sky-600 dark:bg-gray-700">
-    <div data-aos="fade-down" class="bg-transparent mx-auto">
+    <div data-aos="fade-down" class="w-full overflow-hidden bg-transparent">
         @php
             $section = App\Models\Section::where("name", "titleFooter")->first();
         @endphp
+
         @if ($section && $section->content)
-            <div class="flex justify-center">
-                <a href="{{ route('home') }}">
-                    <img src="{{ asset($section->content) }}" alt="Footer" data-aos="fade-up" class="w-full h-auto">
-                </a>
-            </div>
+            <a href="{{ route('home') }}" class="block w-full">
+                <img
+                    src="{{ asset($section->content) }}"
+                    alt="Footer"
+                    data-aos="fade-up"
+                    class="block w-full max-w-full h-auto object-cover"
+                >
+            </a>
         @endif
     </div>
+
     <div>
         <div class="px-6 pt-8 pb-5 grid lg:grid-cols-3 gap-4 md:grid-cols-2 sm:grid-cols-1">
             <div class="flex flex-col mx-3">

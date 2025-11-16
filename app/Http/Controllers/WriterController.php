@@ -61,7 +61,10 @@ class WriterController extends Controller
             "desc" => "nullable|string|min:10|max:4000",
             "image" => "required|image|mimes:jpeg,jpg,png|max:4048",
             "addOn" => "required|file|mimes:pdf,docx|max:10000",
-            "category" => "nullable|array|exists:categories,id",
+
+            "category" => "nullable|array",
+            "category.*" => "exists:categories,id",
+
             "articles" => "nullable|array",
             "articles.*.addOn" => "nullable|file|mimes:pdf,docx|max:10000",
             "articles.*.title" => "required|min:6|max:100",
@@ -71,12 +74,16 @@ class WriterController extends Controller
         ]);
 
         DB::beginTransaction();
+
         try {
+
+            $imagePath = $request->file('image')->store('images', 'public');
+            $pdfPath   = $request->file('addOn')->store('attachments', 'public');
+
             $magazine = Auth::user()->magazines()->create([
                 "title" => $data['title'],
-                "slug" => Str::slug($data['title']) ?: uniqid(),
-                "image" => $request->file('image')->store('images', 'public'),
-                "pdf" => $request->file('addOn')->store('attachments', 'public'),
+                "image" => $imagePath,
+                "pdf" => $pdfPath,
                 "body" => $data['desc'] ?? '',
             ]);
 
@@ -86,15 +93,17 @@ class WriterController extends Controller
 
             if (!empty($data['articles'])) {
                 foreach ($data['articles'] as $idx => $article) {
+
+                    $articleAttachment = $request->hasFile("articles.$idx.addOn")
+                        ? $request->file("articles.$idx.addOn")->store("attachments", "public")
+                        : null;
+
                     $magazine->articles()->create([
                         "title" => $article['title'],
                         "author" => $article['author'],
                         "abstract" => $article['abstract'],
                         "body" => $article['body'],
-                        "url" => $request->hasFile("articles.$idx.addOn")
-                            ? $request->file("articles.$idx.addOn")->store("attachments", "public")
-                            : null,
-                        "slug" => Str::slug($article['title']) ?: uniqid(),
+                        "url" => $articleAttachment,
                     ]);
                 }
             }
@@ -102,13 +111,15 @@ class WriterController extends Controller
             DB::commit();
             ToastMagic::success("نشریه با موفقیت ایجاد شد");
             return redirect()->route('home');
+
         } catch (\Throwable $th) {
             DB::rollBack();
-            Log::error("Magazine create error: {$th->getMessage()}");
+            Log::error("Magazine create error", ['exception' => $th]);
             ToastMagic::error("خطا در ایجاد نشریه");
             return redirect()->back()->withInput();
         }
     }
+
 
     public function newsCreate(Request $request)
     {
@@ -128,7 +139,6 @@ class WriterController extends Controller
             $newsModel->create([
                 "title" => $data['title'],
                 "body" => $data['body'],
-                "slug" => Str::slug($data['title']),
                 "image" => $request->file('image')?->store('images', 'public'),
                 "pdf" => $request->file('addOn')?->store('attachments', 'public'),
                 "user_id" => Auth::id(),
@@ -156,7 +166,6 @@ class WriterController extends Controller
             $event = Auth::user()->events()->create([
                 "title" => $data['title'],
                 "body" => $data['body'],
-                "slug" => Str::slug($data['title']),
                 "image" => $request->file('image')->store('images', 'public'),
             ]);
 
@@ -209,7 +218,6 @@ class WriterController extends Controller
             $magazine->update([
                 "title" => $data['title'],
                 "body" => $data['body'] ?? '',
-                "slug" => Str::slug($data['title']) ?: uniqid(),
             ]);
 
             // دسته‌بندی‌ها
@@ -227,7 +235,6 @@ class WriterController extends Controller
                         "url" => $request->hasFile("articles.$idx.addOn")
                             ? $request->file("articles.$idx.addOn")->store("attachments", "public")
                             : $article['existing_file'] ?? null,
-                        "slug" => Str::slug($article['title']) ?: uniqid(),
                     ]);
                 }
             }
@@ -277,7 +284,6 @@ class WriterController extends Controller
             $instance->update([
                 "title" => $data['title'],
                 "body" => $data['body'],
-                "slug" => Str::slug($data['title']) ?: uniqid(),
             ]);
 
             if (!empty($data['category'])) {

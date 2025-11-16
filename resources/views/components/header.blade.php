@@ -1,17 +1,18 @@
-<div data-aos="fade-down" class="bg-slate-400 dark:bg-slate-500">
+<div data-aos="fade-down" class="w-full bg-slate-400 dark:bg-slate-500 overflow-hidden">
     @php
         $section = App\Models\Section::where("name", "titleHeader")->first();
     @endphp
+
     @if ($section && $section->content)
-        <div class="flex justify-center ">
-            <a href="{{ route('home') }}">
-                <!-- CHANGED: Use storage path for public files -->
-                <img src="{{ asset($section->content) }}" alt="Title Header" class="w-full h-full">
-            </a>
-        </div>
+        <a href="{{ route('home') }}" class="block w-full">
+            <img
+                src="{{ asset($section->content) }}"
+                alt="Title Header"
+                class="w-screen max-w-none h-auto object-cover block"
+            >
+        </a>
     @endif
 </div>
-
 <header data-aos="fade-down" id="header" class=" max-md:flex md:px-4 max-md:px-2 py-3 z-50 bg-blue-500 dark:bg-teal-700 dark:backdrop-blur-lg dark:bg-opacity-50 flex justify-between items-center text-gray-800 dark:text-gray-100 transition-all duration-300 shadow-md">
     @auth
         <div class="relative">

@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\HasSlug;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Overtrue\LaravelLike\Traits\Likeable;
 
 class Article extends Model
 {
-    use HasFactory, Likeable;
+    use HasFactory, Likeable , HasSlug;
 
     protected $fillable = [
         'title',

@@ -117,7 +117,6 @@ class UserController extends Controller
             $user->recommends()->create([
                 "pdf" => $pdfPath,
                 "word" => $wordPath,
-                "slug" => Str::slug($data["title"]),
                 "title" => $data["title"],
             ]);
 

@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\{Event, Khabar, Magazine, Scope, Category};
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{Auth, DB, Log};
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\{Auth, DB, Log, Storage};
 use Devrabiul\ToastMagic\Facades\ToastMagic;
 
 class WriterController extends Controller
@@ -13,47 +12,58 @@ class WriterController extends Controller
     /* ======================
        ==== Views ====
     ====================== */
+
     public function magazineCreateView()
     {
-        $categories = Category::all();
-        $magazine = null;
-        return view('writer-panel.magazineCreate', compact('categories' , 'magazine'));
+        return view('writer-panel.magazineCreate', [
+            'categories' => Category::all(),
+            'magazine' => null
+        ]);
     }
 
     public function magazineUpdateView(Magazine $Magazine)
     {
-        $categories = Category::all();
-        return view('writer-panel.magazineEdit', compact('Magazine', 'categories'));
+        return view('writer-panel.magazineEdit', [
+            'categories' => Category::all(),
+            'Magazine' => $Magazine
+        ]);
     }
 
     public function newsCreateView()
     {
-        $categories = Category::all();
-        $scopes = Scope::withCount('news')->pluck('name', 'id');
-        return view('writer-panel.news_create', compact('categories', 'scopes'));
+        return view('writer-panel.news_create', [
+            'categories' => Category::all(),
+            'scopes' => Scope::withCount('news')->pluck('name', 'id')
+        ]);
     }
 
-    public function newsUpdateView(Khabar $khabar)
+    public function newsUpdateView(Khabar $Khabar)
     {
-        $categories = Category::all();
-        return view('writer-panel.newEdit', compact('khabar', 'categories'));
+        return view('writer-panel.newEdit', [
+            'categories' => Category::all(),
+            'Khabar' => $Khabar
+        ]);
     }
 
     public function eventCreateView()
     {
-        $categories = Category::all();
-        return view('writer-panel.event_create', compact('categories'));
+        return view('writer-panel.event_create', [
+            'categories' => Category::all()
+        ]);
     }
 
     public function eventUpdateView(Event $event)
     {
-        $categories = Category::all();
-        return view('writer-panel.eventEdit', compact('event', 'categories'));
+        return view('writer-panel.eventEdit', [
+            'event' => $event,
+            'categories' => Category::all()
+        ]);
     }
 
     /* ======================
        ==== Create ====
     ====================== */
+
     public function magazineCreate(Request $request)
     {
         $data = $request->validate([
@@ -66,44 +76,43 @@ class WriterController extends Controller
             "category.*" => "exists:categories,id",
 
             "articles" => "nullable|array",
-            "articles.*.addOn" => "nullable|file|mimes:pdf,docx|max:10000",
             "articles.*.title" => "required|min:6|max:100",
             "articles.*.author" => "required|string|min:2|max:50",
             "articles.*.abstract" => "required|min:15|max:10000",
             "articles.*.body" => "required|min:15",
+            "articles.*.addOn" => "nullable|file|mimes:pdf,docx|max:10000",
         ]);
 
         DB::beginTransaction();
-
         try {
-
+            // ذخیره فایل‌ها
             $imagePath = $request->file('image')->store('images', 'public');
             $pdfPath   = $request->file('addOn')->store('attachments', 'public');
 
+            // ایجاد نشریه
             $magazine = Auth::user()->magazines()->create([
                 "title" => $data['title'],
                 "image" => $imagePath,
-                "pdf" => $pdfPath,
-                "body" => $data['desc'] ?? '',
+                "pdf"   => $pdfPath,
+                "body"  => $data['desc'] ?? '',
             ]);
 
-            if (!empty($data['category'])) {
-                $magazine->categories()->attach($data['category']);
-            }
+            // دسته‌بندی‌ها
+            $magazine->categories()->attach($data['category'] ?? []);
 
+            // مقالات
             if (!empty($data['articles'])) {
-                foreach ($data['articles'] as $idx => $article) {
-
-                    $articleAttachment = $request->hasFile("articles.$idx.addOn")
-                        ? $request->file("articles.$idx.addOn")->store("attachments", "public")
+                foreach ($data['articles'] as $i => $article) {
+                    $file = $request->hasFile("articles.$i.addOn")
+                        ? $request->file("articles.$i.addOn")->store("attachments", "public")
                         : null;
 
                     $magazine->articles()->create([
-                        "title" => $article['title'],
-                        "author" => $article['author'],
-                        "abstract" => $article['abstract'],
-                        "body" => $article['body'],
-                        "url" => $articleAttachment,
+                        "title" => $article["title"],
+                        "author" => $article["author"],
+                        "abstract" => $article["abstract"],
+                        "body" => $article["body"],
+                        "url" => $file
                     ]);
                 }
             }
@@ -128,28 +137,37 @@ class WriterController extends Controller
             "body" => "required|min:15|max:100000",
             "image" => "nullable|image|mimes:jpeg,jpg,png,svg|max:2048",
             "addOn" => "nullable|file|mimes:pdf,docx|max:10000",
-            "category" => "nullable|array|exists:categories,id",
+            "category" => "nullable|array",
+            "category.*" => "exists:categories,id",
             "scope" => "nullable|exists:scopes,id",
         ]);
 
         try {
-            $scope = isset($data['scope']) ? Scope::find($data['scope']) : null;
-            $newsModel = $scope ? $scope->news() : new Khabar();
-
-            $newsModel->create([
+            $payload = [
                 "title" => $data['title'],
                 "body" => $data['body'],
+                "user_id" => Auth::id(),
                 "image" => $request->file('image')?->store('images', 'public'),
                 "pdf" => $request->file('addOn')?->store('attachments', 'public'),
-                "user_id" => Auth::id(),
-            ]);
+            ];
+
+            if (!empty($data['scope'])) {
+                $news = Scope::find($data['scope'])->news()->create($payload);
+            } else {
+                $news = Khabar::create($payload);
+            }
+
+            if (!empty($data['category'])) {
+                $news->categories()->attach($data['category']);
+            }
 
             ToastMagic::success("خبر با موفقیت ایجاد شد");
             return redirect()->back();
+
         } catch (\Throwable $th) {
-            Log::error("News create error: {$th->getMessage()}");
+            Log::error("News create error", ['exception' => $th]);
             ToastMagic::error("خطا در ایجاد خبر");
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
     }
 
@@ -159,7 +177,8 @@ class WriterController extends Controller
             "title" => "required|min:6|max:100",
             "body" => "required|min:15|max:100000",
             "image" => "required|image|mimes:jpeg,jpg,png,svg|max:2048",
-            "category" => "nullable|array|exists:categories,id",
+            "category" => "nullable|array",
+            "category.*" => "exists:categories,id",
         ]);
 
         try {
@@ -169,22 +188,21 @@ class WriterController extends Controller
                 "image" => $request->file('image')->store('images', 'public'),
             ]);
 
-            if (!empty($data['category'])) {
-                $event->categories()->attach($data['category']);
-            }
+            $event->categories()->attach($data['category'] ?? []);
 
             ToastMagic::success("رویداد با موفقیت ایجاد شد");
             return redirect()->back();
         } catch (\Throwable $th) {
-            Log::error("Event create error: {$th->getMessage()}");
+            Log::error("Event create error", ['exception' => $th]);
             ToastMagic::error("خطا در ایجاد رویداد");
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
     }
 
     /* ======================
        ==== Update ====
     ====================== */
+
     public function magazineUpdate(Request $request)
     {
         $data = $request->validate([
@@ -193,55 +211,66 @@ class WriterController extends Controller
             "body" => "nullable|string|min:10",
             "image" => "nullable|image|max:4048",
             "addOn" => "nullable|file|mimes:pdf,docx|max:10000",
-            "category" => "nullable|array|exists:categories,id",
+            "category" => "nullable|array",
+            "category.*" => "exists:categories,id",
+
             "articles" => "nullable|array",
-            "articles.*.addOn" => "nullable|file|mimes:pdf,docx|max:10000",
             "articles.*.title" => "required|min:6|max:100",
             "articles.*.author" => "required|string|min:2|max:50",
             "articles.*.abstract" => "required|min:15|max:10000",
             "articles.*.body" => "required|min:15",
+            "articles.*.addOn" => "nullable|file|mimes:pdf,docx|max:10000",
         ]);
 
         $magazine = Magazine::findOrFail($data['id']);
 
         DB::beginTransaction();
         try {
-            // فایل‌ها
-            if ($request->hasFile('image')) {
-                $magazine->image = $request->file('image')->store('images', 'public');
-            }
-            if ($request->hasFile('addOn')) {
-                $magazine->pdf = $request->file('addOn')->store('attachments', 'public');
-            }
-
-            // اطلاعات
-            $magazine->update([
+            $payload = [
                 "title" => $data['title'],
                 "body" => $data['body'] ?? '',
-            ]);
+            ];
 
-            // دسته‌بندی‌ها
+            if ($request->hasFile('image')) {
+                Storage::disk('public')->delete($magazine->image);
+                $payload['image'] = $request->file('image')->store('images', 'public');
+            }
+            if ($request->hasFile('addOn')) {
+                Storage::disk('public')->delete($magazine->pdf);
+                $payload['pdf'] = $request->file('addOn')->store('attachments', 'public');
+            }
+
+            $magazine->update($payload);
+
             $magazine->categories()->sync($data['category'] ?? []);
 
-            // مقالات
-            $magazine->articles()->delete();
+            foreach ($magazine->articles as $article) {
+                if ($article->url) {
+                    Storage::disk('public')->delete($article->url);
+                }
+                $article->delete();
+            }
+
             if (!empty($data['articles'])) {
-                foreach ($data['articles'] as $idx => $article) {
+                foreach ($data['articles'] as $i => $article) {
+                    $file = $request->hasFile("articles.$i.addOn")
+                        ? $request->file("articles.$i.addOn")->store("attachments", "public")
+                        : null;
+
                     $magazine->articles()->create([
                         "title" => $article['title'],
                         "author" => $article['author'],
                         "abstract" => $article['abstract'],
                         "body" => $article['body'],
-                        "url" => $request->hasFile("articles.$idx.addOn")
-                            ? $request->file("articles.$idx.addOn")->store("attachments", "public")
-                            : $article['existing_file'] ?? null,
+                        "url" => $file,
                     ]);
                 }
             }
 
             DB::commit();
-            ToastMagic::success("نشریه با موفقیت به‌روزرسانی شد");
+            ToastMagic::success("نشریه با موفقیت بروزرسانی شد");
             return redirect()->route('home');
+
         } catch (\Throwable $th) {
             DB::rollBack();
             Log::error("Magazine update error: {$th->getMessage()}");
@@ -249,6 +278,7 @@ class WriterController extends Controller
             return redirect()->back()->withInput();
         }
     }
+
 
     public function newsUpdate(Request $request)
     {
@@ -262,35 +292,38 @@ class WriterController extends Controller
 
     private function updateGeneric(Request $request, $modelClass, $type)
     {
+        $table = (new $modelClass)->getTable();
         $data = $request->validate([
-            "id" => "required|exists:".$modelClass::class.",id",
+            "id" => "required|exists:$table,id",
             "title" => "required|min:6|max:100",
             "body" => "required|min:15",
             "image" => "nullable|image|max:4048",
             "addOn" => "nullable|file|mimes:pdf,docx|max:5000",
-            "category" => "nullable|array|exists:categories,id",
+            "category" => "nullable|array",
+            "category.*" => "exists:categories,id",
         ]);
 
         $instance = $modelClass::findOrFail($data['id']);
 
         try {
-            if ($request->hasFile('image')) {
-                $instance->image = $request->file('image')->store('images', 'public');
-            }
-            if ($request->hasFile('addOn')) {
-                $instance->pdf = $request->file('addOn')->store('attachments', 'public');
-            }
-
-            $instance->update([
+            $payload = [
                 "title" => $data['title'],
                 "body" => $data['body'],
-            ]);
-
-            if (!empty($data['category'])) {
-                $instance->categories()->sync($data['category']);
+            ];
+            if ($request->hasFile('image')) {
+                Storage::disk('public')->delete($instance->image);
+                $payload['image'] = $request->file('image')->store('images', 'public');
+            }
+            if ($request->hasFile('addOn')) {
+                Storage::disk('public')->delete($instance->pdf);
+                $payload['pdf'] = $request->file('addOn')->store('attachments', 'public');
             }
 
-            ToastMagic::success("$type با موفقیت به‌روزرسانی شد");
+            $instance->update($payload);
+
+            $instance->categories()->sync($data['category'] ?? []);
+
+            ToastMagic::success("$type با موفقیت بروزرسانی شد");
             return redirect()->route('home');
         } catch (\Throwable $th) {
             Log::error("$type update error: {$th->getMessage()}");
@@ -307,7 +340,10 @@ class WriterController extends Controller
         $content = $modelClass::find($id);
         $user = Auth::user();
 
-        if ($content && ($content->user_id == $user->id || $user->hasRole('admin|super admin'))) {
+        if ($content && ($content->user_id == $user->id || $user->hasAnyRole(['admin', 'super admin']))) {
+            Storage::disk('public')->delete($content->image);
+            Storage::disk('public')->delete($content->pdf ?? '');
+
             $content->delete();
             ToastMagic::success("حذف شد", "محتوا با موفقیت حذف شد");
         } else {
@@ -332,3 +368,4 @@ class WriterController extends Controller
         return $this->destroy($id, Event::class);
     }
 }
+

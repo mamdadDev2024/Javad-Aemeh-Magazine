@@ -27,7 +27,7 @@ Route::middleware(['role:admin|super admin', 'auth'])
 
         // News Routes
         Route::get('/news-create', [WriterController::class, 'newsCreateView'])->name('new.create');
-        Route::post('/news-create', [WriterController::class, 'newCreate'])->name('new.do.create');
-        Route::get('/new-edit/{Khabar:slug}', [WriterController::class, 'newUpdateView'])->name('new.edit');
-        Route::put('/new-do-edit', [WriterController::class, 'newUpdate'])->name('new.do.update');
+        Route::post('/news-create', [WriterController::class, 'newsCreate'])->name('new.do.create');
+        Route::get('/new-edit/{Khabar:slug}', [WriterController::class, 'newsUpdateView'])->name('new.edit');
+        Route::put('/new-do-edit', [WriterController::class, 'newsUpdate'])->name('new.do.update');
     });

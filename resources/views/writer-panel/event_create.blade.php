@@ -37,7 +37,7 @@
                 @error('body')
                     <div class="text-red-500 text-sm mt-1" id="error-body">{{ $message }}</div>
                 @enderror
-                <textarea name="body" id="body" aria-describedby="error-body" class=" p-2" required>{{old("")}}</textarea>
+                <textarea name="body" id="body" aria-describedby="error-body" class="mt-1  h-36 block w-full min-h-20 max-h-96 focus:outline-none transition-all border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-400">{{ old('body') }}</textarea>
             </div>
             <x-captcha/>
             <div>

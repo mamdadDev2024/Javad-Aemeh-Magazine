@@ -15,6 +15,7 @@
             'items' => $magazines,
             'title' => 'نشریات',
             'deleteRoute' => 'admin.magazine.delete',
+            'editRoute' => 'writer.magazine.edit',
             'showImage' => true,
             'showBody' => false,
             'showFiles' => false

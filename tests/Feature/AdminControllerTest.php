@@ -2,15 +2,13 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Comment;
 use App\Models\Article;
+use App\Models\Comment;
 use App\Models\Magazine;
-use App\Models\Category;
-use App\Models\Scope;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class AdminControllerTest extends TestCase
 {
@@ -61,7 +59,7 @@ class AdminControllerTest extends TestCase
 
         $response = $this->actingAs($admin)->post(route('admin.update.users'), [
             'statuses' => [$user->id => 1],
-            'roles' => [$user->id => Role::where('name', 'writer')->first()->id]
+            'roles' => [$user->id => Role::where('name', 'writer')->first()->id],
         ]);
 
         $response->assertRedirect(route('admin.index_users'));
@@ -69,8 +67,6 @@ class AdminControllerTest extends TestCase
         $this->assertTrue($user->hasRole('writer'));
         $this->assertEquals(1, $user->status);
     }
-
-
 
     /** @test */
     public function admin_can_approve_comment()
@@ -82,7 +78,7 @@ class AdminControllerTest extends TestCase
         $comment = Comment::factory()->create([
             'commentable_id' => $article->id,
             'commentable_type' => Article::class,
-            'status' => 0
+            'status' => 0,
         ]);
 
         $response = $this->actingAs($admin)->post(route('admin.comment.accept', $comment->id));
@@ -134,7 +130,6 @@ class AdminControllerTest extends TestCase
         $response->assertRedirect();
         $this->assertSoftDeleted($magazine);
     }
-
 
     /** @test */
     public function admin_can_approve_all_comments()

@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        if (!User::exists()) {
+        if (! User::exists()) {
             foreach (self::$seeds as $seed) {
                 $this->call($seed);
             }

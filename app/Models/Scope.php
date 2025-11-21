@@ -8,10 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Scope extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        "name",
+        'name',
     ];
-    public function news(){
+
+    public function news()
+    {
         return $this->hasMany(Khabar::class);
     }
 }

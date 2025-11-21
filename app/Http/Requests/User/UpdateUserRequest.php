@@ -25,10 +25,10 @@ class UpdateUserRequest extends FormRequest
         return [
             'delete' => 'nullable|exists:users,id',
             'g-recaptcha-response' => 'required|captcha',
-            "email" => "nullable|email|unique:users,email," . Auth::id(),
-            "name" => "nullable|min:4|max:40",
-            "number" => "nullable|numeric|min:9|unique:users,number," . Auth::id(),
-            "image" => "nullable|image|mimes:jpg,png|max:5120"
+            'email' => 'nullable|email|unique:users,email,'.Auth::id(),
+            'name' => 'nullable|min:4|max:40',
+            'number' => 'nullable|numeric|min:9|unique:users,number,'.Auth::id(),
+            'image' => 'nullable|image|mimes:jpg,png|max:5120',
         ];
     }
 

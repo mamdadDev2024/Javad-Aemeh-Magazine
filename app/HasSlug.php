@@ -20,7 +20,7 @@ trait HasSlug
     protected function generateSlugOnCreate()
     {
         // اگر مدل اسلاگ دارد و هنوز مقدار ندارد → بساز
-        if (empty($this->slug) && !empty($this->title)) {
+        if (empty($this->slug) && ! empty($this->title)) {
             $this->slug = $this->generateUniqueSlug($this->title);
         }
     }
@@ -28,7 +28,7 @@ trait HasSlug
     protected function generateSlugOnUpdate()
     {
         // فقط اگر title تغییر کرده
-        if ($this->isDirty('title') && !empty($this->title)) {
+        if ($this->isDirty('title') && ! empty($this->title)) {
             $this->slug = $this->generateUniqueSlug($this->title, $this->id);
         }
     }
@@ -40,10 +40,10 @@ trait HasSlug
         $count = 1;
 
         while (
-        $this->newQuery()
-            ->where('slug', $slug)
-            ->when($exceptId, fn($q) => $q->where('id', '!=', $exceptId))
-            ->exists()
+            $this->newQuery()
+                ->where('slug', $slug)
+                ->when($exceptId, fn ($q) => $q->where('id', '!=', $exceptId))
+                ->exists()
         ) {
             $slug = "{$original}-{$count}";
             $count++;

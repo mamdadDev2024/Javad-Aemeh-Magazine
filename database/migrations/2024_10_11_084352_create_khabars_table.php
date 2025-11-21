@@ -15,13 +15,13 @@ return new class extends Migration
     {
         Schema::create('khabars', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Scope::class)->nullable()->constrained("scopes")->cascadeOnDelete();
+            $table->foreignIdFor(Scope::class)->nullable()->constrained('scopes')->cascadeOnDelete();
             $table->string('title');
             $table->string('slug')->unique();
             $table->text('body');
-            $table->string("pdf")->nullable();
-            $table->string("image");
-            $table->foreignIdFor(User::class)->constrained("users")->cascadeOnDelete();
+            $table->string('pdf')->nullable();
+            $table->string('image');
+            $table->foreignIdFor(User::class)->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });
     }

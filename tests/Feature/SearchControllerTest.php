@@ -2,14 +2,14 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\Article;
-use App\Models\Magazine;
 use App\Models\Event;
 use App\Models\Khabar;
+use App\Models\Magazine;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class SearchControllerTest extends TestCase
 {
@@ -37,7 +37,7 @@ class SearchControllerTest extends TestCase
         Event::factory()->create(['title' => 'Laravel Event', 'user_id' => $user->id]);
         Khabar::factory()->create(['title' => 'Laravel News', 'user_id' => $user->id]);
 
-        $response = $this->actingAs($user)->get(route('search') . '?search=Laravel&type=all');
+        $response = $this->actingAs($user)->get(route('search').'?search=Laravel&type=all');
 
         $response->assertStatus(200);
         $response->assertViewIs('main.search');
@@ -55,7 +55,7 @@ class SearchControllerTest extends TestCase
         Magazine::factory()->create(['title' => 'Laravel Magazine', 'user_id' => $user->id]);
         Article::factory()->create(['title' => 'Laravel Article']);
 
-        $response = $this->actingAs($user)->get(route('search') . '?search=Laravel&type=Magazine');
+        $response = $this->actingAs($user)->get(route('search').'?search=Laravel&type=Magazine');
 
         $response->assertStatus(200);
         $response->assertViewHas('results');
@@ -68,7 +68,7 @@ class SearchControllerTest extends TestCase
         $user = User::factory()->create();
         $user->assignRole('user');
 
-        $response = $this->actingAs($user)->get(route('search') . '?search=&type=all');
+        $response = $this->actingAs($user)->get(route('search').'?search=&type=all');
 
         $response->assertStatus(200);
         $response->assertViewIs('main.search');
@@ -80,7 +80,7 @@ class SearchControllerTest extends TestCase
         $user = User::factory()->create();
         $user->assignRole('user');
 
-        $response = $this->actingAs($user)->get(route('search') . '?search=test&type=InvalidType');
+        $response = $this->actingAs($user)->get(route('search').'?search=test&type=InvalidType');
 
         $response->assertStatus(200);
         // Should handle gracefully, perhaps return empty results
@@ -97,7 +97,7 @@ class SearchControllerTest extends TestCase
             Magazine::factory()->create(['title' => "Magazine {$i}", 'user_id' => $user->id]);
         }
 
-        $response = $this->actingAs($user)->get(route('search') . '?search=Magazine&type=all');
+        $response = $this->actingAs($user)->get(route('search').'?search=Magazine&type=all');
 
         $response->assertStatus(200);
         $results = $response->viewData('results');
@@ -111,7 +111,7 @@ class SearchControllerTest extends TestCase
         $user->assignRole('user');
 
         // This test simulates potential database errors or exceptions
-        $response = $this->actingAs($user)->get(route('search') . '?search=test&type=all');
+        $response = $this->actingAs($user)->get(route('search').'?search=test&type=all');
 
         $response->assertStatus(200);
         // Should not crash, should handle errors
@@ -122,7 +122,7 @@ class SearchControllerTest extends TestCase
     {
         Magazine::factory()->create(['title' => 'Test Magazine']);
 
-        $response = $this->get(route('search') . '?search=Test&type=all');
+        $response = $this->get(route('search').'?search=Test&type=all');
 
         $response->assertStatus(200);
         $response->assertViewIs('main.search');

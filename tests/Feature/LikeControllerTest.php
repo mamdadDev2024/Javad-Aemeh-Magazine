@@ -2,14 +2,14 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Magazine;
 use App\Models\Article;
 use App\Models\Event;
 use App\Models\Khabar;
+use App\Models\Magazine;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class LikeControllerTest extends TestCase
 {
@@ -18,7 +18,7 @@ class LikeControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create roles
         Role::create(['name' => 'user']);
         Role::create(['name' => 'admin']);
@@ -30,12 +30,12 @@ class LikeControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
 
         $response = $this->actingAs($user)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
 
         $response->assertRedirect();
@@ -48,13 +48,13 @@ class LikeControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
         $article = Article::factory()->create(['magazine_id' => $magazine->id]);
 
         $response = $this->actingAs($user)->post(route('toggle.like', [
             'type' => 'article',
-            'id' => $article->id
+            'id' => $article->id,
         ]));
 
         $response->assertRedirect();
@@ -67,12 +67,12 @@ class LikeControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $event = Event::factory()->create(['user_id' => $user->id]);
 
         $response = $this->actingAs($user)->post(route('toggle.like', [
             'type' => 'event',
-            'id' => $event->id
+            'id' => $event->id,
         ]));
 
         $response->assertRedirect();
@@ -85,12 +85,12 @@ class LikeControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $khabar = Khabar::factory()->create(['user_id' => $user->id]);
 
         $response = $this->actingAs($user)->post(route('toggle.like', [
             'type' => 'khabar',
-            'id' => $khabar->id
+            'id' => $khabar->id,
         ]));
 
         $response->assertRedirect();
@@ -103,9 +103,9 @@ class LikeControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         // First like
         $user->like($magazine);
         $this->assertTrue($user->hasLiked($magazine));
@@ -113,7 +113,7 @@ class LikeControllerTest extends TestCase
         // Then unlike via toggle
         $response = $this->actingAs($user)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
 
         $response->assertRedirect();
@@ -129,7 +129,7 @@ class LikeControllerTest extends TestCase
 
         $response = $this->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
 
         $response->assertRedirect();
@@ -144,7 +144,7 @@ class LikeControllerTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('toggle.like', [
             'type' => 'InvalidType',
-            'id' => 1
+            'id' => 1,
         ]));
 
         $response->assertRedirect();
@@ -158,7 +158,7 @@ class LikeControllerTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => 99999 // Non-existent ID
+            'id' => 99999, // Non-existent ID
         ]));
 
         $response->assertRedirect();
@@ -170,26 +170,26 @@ class LikeControllerTest extends TestCase
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
         $user3 = User::factory()->create();
-        
+
         $user1->assignRole('user');
         $user2->assignRole('user');
         $user3->assignRole('user');
-        
+
         $magazine = Magazine::factory()->create(['user_id' => $user1->id]);
 
         $this->actingAs($user1)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
 
         $this->actingAs($user2)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
 
         $this->actingAs($user3)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
 
         $this->assertEquals(3, $magazine->likers()->count());
@@ -203,7 +203,7 @@ class LikeControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
         $article = Article::factory()->create(['magazine_id' => $magazine->id]);
         $event = Event::factory()->create(['user_id' => $user->id]);
@@ -211,22 +211,22 @@ class LikeControllerTest extends TestCase
 
         $this->actingAs($user)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
 
         $this->actingAs($user)->post(route('toggle.like', [
             'type' => 'article',
-            'id' => $article->id
+            'id' => $article->id,
         ]));
 
         $this->actingAs($user)->post(route('toggle.like', [
             'type' => 'event',
-            'id' => $event->id
+            'id' => $event->id,
         ]));
 
         $this->actingAs($user)->post(route('toggle.like', [
             'type' => 'khabar',
-            'id' => $khabar->id
+            'id' => $khabar->id,
         ]));
 
         $this->assertTrue($user->hasLiked($magazine));
@@ -240,27 +240,27 @@ class LikeControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
 
         // First toggle - should like
         $this->actingAs($user)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
         $this->assertTrue($user->hasLiked($magazine));
 
         // Second toggle - should unlike
         $this->actingAs($user)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
         $this->assertFalse($user->hasLiked($magazine));
 
         // Third toggle - should like again
         $this->actingAs($user)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
         $this->assertTrue($user->hasLiked($magazine));
     }
@@ -270,13 +270,13 @@ class LikeControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
 
         // Test with lowercase
         $response = $this->actingAs($user)->post(route('toggle.like', [
             'type' => 'magazine', // lowercase
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
 
         $response->assertRedirect();
@@ -288,12 +288,12 @@ class LikeControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
 
         $response = $this->actingAs($user)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
 
         $response->assertRedirect();
@@ -305,15 +305,15 @@ class LikeControllerTest extends TestCase
     {
         $author = User::factory()->create();
         $liker = User::factory()->create();
-        
+
         $author->assignRole('user');
         $liker->assignRole('user');
-        
+
         $magazine = Magazine::factory()->create(['user_id' => $author->id]);
 
         $response = $this->actingAs($liker)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
 
         $response->assertRedirect();
@@ -327,11 +327,11 @@ class LikeControllerTest extends TestCase
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
         $user3 = User::factory()->create();
-        
+
         $user1->assignRole('user');
         $user2->assignRole('user');
         $user3->assignRole('user');
-        
+
         $magazine = Magazine::factory()->create(['user_id' => $user1->id]);
 
         $this->assertEquals(0, $magazine->likers()->count());
@@ -339,28 +339,28 @@ class LikeControllerTest extends TestCase
         // User 1 likes
         $this->actingAs($user1)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
         $this->assertEquals(1, $magazine->fresh()->likers()->count());
 
         // User 2 likes
         $this->actingAs($user2)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
         $this->assertEquals(2, $magazine->fresh()->likers()->count());
 
         // User 1 unlikes
         $this->actingAs($user1)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
         $this->assertEquals(1, $magazine->fresh()->likers()->count());
 
         // User 3 likes
         $this->actingAs($user3)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
         $this->assertEquals(2, $magazine->fresh()->likers()->count());
     }
@@ -370,13 +370,13 @@ class LikeControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
 
         // This test simulates database errors or other exceptions
         $response = $this->actingAs($user)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
 
         $response->assertRedirect();
@@ -387,16 +387,16 @@ class LikeControllerTest extends TestCase
     {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
-        
+
         $user1->assignRole('user');
         $user2->assignRole('user');
-        
+
         $magazine = Magazine::factory()->create(['user_id' => $user1->id]);
 
         // User 1 likes
         $this->actingAs($user1)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
 
         $this->assertTrue($user1->hasLiked($magazine));
@@ -405,7 +405,7 @@ class LikeControllerTest extends TestCase
         // User 2 likes
         $this->actingAs($user2)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
 
         $this->assertTrue($user1->hasLiked($magazine));
@@ -414,7 +414,7 @@ class LikeControllerTest extends TestCase
         // User 1 unlikes
         $this->actingAs($user1)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
 
         $this->assertFalse($user1->hasLiked($magazine));

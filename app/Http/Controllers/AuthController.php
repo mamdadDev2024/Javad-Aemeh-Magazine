@@ -3,69 +3,78 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Auth\LoginRequest;
-use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\RegisterRequest;
-use App\Http\Requests\Auth\ChangePasswordRequest as GuestChangePasswordRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Models\User;
+use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Devrabiul\ToastMagic\Facades\ToastMagic;
 
 class AuthController extends Controller
 {
     public function login_view()
     {
-        return view("auth.login");
+        return view('auth.login');
     }
+
     public function register_view()
     {
-        return view("auth.register");
+        return view('auth.register');
     }
+
     public function resetView()
     {
         if (session()->has('reset_user_id')) {
             return view('auth.reset');
         }
+
         return redirect('/');
     }
+
     public function forgetView()
     {
         return view('auth.forget');
     }
+
     public function login(LoginRequest $request)
     {
         $data = $request->validated();
         try {
-            if (Auth::attempt(['username' => $data["username"], 'password' => $data["password"]])) {
-                ToastMagic::success("خوش آمدید", "ورود با موفقیت انجام شد");
+            if (Auth::attempt(['username' => $data['username'], 'password' => $data['password']])) {
+                ToastMagic::success('خوش آمدید', 'ورود با موفقیت انجام شد');
+
                 return redirect()->route('home');
             } else {
-                ToastMagic::error("خطا", "حساب کاربری با این مشخصات پیدا نشد");
+                ToastMagic::error('خطا', 'حساب کاربری با این مشخصات پیدا نشد');
+
                 return redirect()->back();
             }
         } catch (\Throwable $th) {
-            Log::error("Login error => " . $th->getMessage());
-            ToastMagic::error("خطا", "مشکلی در ورود به حساب ایجاد شده. لطفا دوباره تلاش کنید یا با ادمین تماس بگیرید.");
+            Log::error('Login error => '.$th->getMessage());
+            ToastMagic::error('خطا', 'مشکلی در ورود به حساب ایجاد شده. لطفا دوباره تلاش کنید یا با ادمین تماس بگیرید.');
+
             return redirect()->back();
         }
     }
+
     public function forget(ResetPasswordRequest $request)
     {
         $data = $request->validated();
 
         $user = User::where('number', $data['number'])
-                    ->where('username', $data['username'])
-                    ->first();
+            ->where('username', $data['username'])
+            ->first();
 
         if ($user) {
-            if (!$user->hasRole("super admin")) {
+            if (! $user->hasRole('super admin')) {
                 session(['reset_user_id' => $user->id]);
                 ToastMagic::alert('انجام شد!', 'اطلاعات شما تایید شد. لطفاً رمز عبور جدید خود را وارد کنید.');
-            }else{
-                return redirect("/");
+            } else {
+                return redirect('/');
             }
+
             return redirect()->route('reset');
         }
 
@@ -73,21 +82,24 @@ class AuthController extends Controller
 
         return redirect()->back()->withInput();
     }
+
     public function reset(Request $request)
     {
         $data = $request->validate([
             'g-recaptcha-response' => 'required|captcha',
             'password' => 'required|string|min:6|max:50|confirmed',
         ]);
-        if (!session()->has('reset_user_id')) {
+        if (! session()->has('reset_user_id')) {
             ToastMagic::alert('خطا!', 'شما دسترسی به این مسیر ندارید!');
+
             return redirect()->route('home');
         }
 
         $user = User::find(session('reset_user_id'));
 
-        if (!$user) {
+        if (! $user) {
             ToastMagic::alert('خطا!', 'کاربر مورد نظر یافت نشد!');
+
             return redirect()->route('home');
         }
 
@@ -95,8 +107,10 @@ class AuthController extends Controller
 
         session()->forget('reset_user_id');
         ToastMagic::alert('انجام شد!', 'رمز عبور شما با موفقیت تغییر کرد!');
+
         return redirect()->route('home');
     }
+
     public function register(RegisterRequest $request)
     {
         $data = $request->validated();
@@ -106,24 +120,27 @@ class AuthController extends Controller
                 'username' => $data['username'],
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
-                "number" => $data["number"]
+                'number' => $data['number'],
             ]);
 
-            $user->assignRole("user");
+            $user->assignRole('user');
             Auth::login($user);
-            ToastMagic::success("خوش آمدید", "ثبت‌نام با موفقیت انجام شد");
+            ToastMagic::success('خوش آمدید', 'ثبت‌نام با موفقیت انجام شد');
+
             return redirect()->route('home');
         } catch (\Throwable $th) {
-            Log::error("Error in registration at " . now() . " => " . $th->getMessage());
-            ToastMagic::alert("خطا", "مشکلی در ثبت‌نام رخ داده است.");
+            Log::error('Error in registration at '.now().' => '.$th->getMessage());
+            ToastMagic::alert('خطا', 'مشکلی در ثبت‌نام رخ داده است.');
 
             return redirect()->back();
         }
     }
+
     public function logout()
     {
         Auth::logout();
-        ToastMagic::success("خروج", "با موفقیت از حساب خود خارج شدید");
+        ToastMagic::success('خروج', 'با موفقیت از حساب خود خارج شدید');
+
         return redirect()->route('home');
     }
 }

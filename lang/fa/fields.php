@@ -1,4 +1,5 @@
 <?php
+
 return [
     'aboutUs' => 'درباره ما',
     'contactUs' => 'تماس با ما',
@@ -9,7 +10,7 @@ return [
     'khabarGuide' => 'راهنمای خبر',
     'eventGuide' => 'راهنمای رویداد',
     'links' => 'دسترسی سریع',
-    "titleHeader" => "عکس قسمت بالای سایت",
-    "defaultContentImage" => "عکس پیش فرض فضا های خالی",
-    "titleFooter" => "عکس قسمت پایین سایت",
+    'titleHeader' => 'عکس قسمت بالای سایت',
+    'defaultContentImage' => 'عکس پیش فرض فضا های خالی',
+    'titleFooter' => 'عکس قسمت پایین سایت',
 ];

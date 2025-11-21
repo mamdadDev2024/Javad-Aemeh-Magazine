@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('views', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("user_id")->constrained("users")->cascadeOnDelete();
-            $table->unsignedBigInteger("viewable_id");
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->unsignedBigInteger('viewable_id');
             $table->ipAddress();
-            $table->string("viewable_type");
+            $table->string('viewable_type');
             $table->timestamps();
             // $table->unique(["user_id","ip_address"]);
         });

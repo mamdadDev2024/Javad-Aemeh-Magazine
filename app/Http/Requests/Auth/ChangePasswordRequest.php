@@ -12,7 +12,7 @@ class ChangePasswordRequest extends FormRequest
     public function authorize(): bool
     {
         // CHANGED: Allow guests to change password in reset flow
-        return !auth()->check();
+        return ! auth()->check();
     }
 
     /**
@@ -23,7 +23,7 @@ class ChangePasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "g-recaptcha-response" => "required|captcha",
+            'g-recaptcha-response' => 'required|captcha',
             'password' => 'required|string|min:6|max:50|confirmed',
         ];
     }

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class CommentController extends Controller
 {
-    public function __invoke(CreateCommentRequest $request , $model , $contentId)
+    public function __invoke(CreateCommentRequest $request, $model, $contentId)
     {
         $data = $request->validated();
         $classModel = "App\\Models\\$model";
@@ -18,14 +18,16 @@ class CommentController extends Controller
         try {
             $model->comments()->create([
                 // CHANGED: use body (aligned with migration and request)
-                "body" => $data["body"],
-                "user_id" => Auth::id()
+                'body' => $data['body'],
+                'user_id' => Auth::id(),
             ]);
-            ToastMagic::success("نظر شما ثبت شد", "منتظر تایید باشید");
+            ToastMagic::success('نظر شما ثبت شد', 'منتظر تایید باشید');
+
             return back();
         } catch (\Throwable $th) {
-            Log::error("Error creating comment: " . $th->getMessage());
-            ToastMagic::error("مشکلی پیش آمده", "در صورتی که شرایط عادی است به ادمین گزارش دهید");
+            Log::error('Error creating comment: '.$th->getMessage());
+            ToastMagic::error('مشکلی پیش آمده', 'در صورتی که شرایط عادی است به ادمین گزارش دهید');
+
             return back();
         }
     }

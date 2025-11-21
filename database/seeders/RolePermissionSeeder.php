@@ -2,12 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Role;
 use App\Models\Permission;
+use App\Models\Role;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 
 class RolePermissionSeeder extends Seeder
 {
@@ -25,12 +24,12 @@ class RolePermissionSeeder extends Seeder
         }
 
         $admin = User::create([
-            "username" => "admin",
-            "name" => "ادمین",
-            "email" => "hashemimohammadhosein08@gmail.com",
-            "password" => Hash::make(env("ADMIN_PASSWORD")),
-            "number" => 9903008746
+            'username' => 'admin',
+            'name' => 'ادمین',
+            'email' => 'hashemimohammadhosein08@gmail.com',
+            'password' => Hash::make(env('ADMIN_PASSWORD')),
+            'number' => 9903008746,
         ]);
-        $admin->assignRole("super admin");
+        $admin->assignRole('super admin');
     }
 }

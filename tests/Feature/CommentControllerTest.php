@@ -2,13 +2,13 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\Article;
 use App\Models\Comment;
 use App\Models\Magazine;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class CommentControllerTest extends TestCase
 {
@@ -34,15 +34,15 @@ class CommentControllerTest extends TestCase
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
         $article = Article::factory()->create([
             'magazine_id' => $magazine->id,
-            'title' => 'Test Article'
+            'title' => 'Test Article',
         ]);
 
         $response = $this->actingAs($user)->post(route('create.comment', [
             'model' => 'Article',
-            'contentId' => $article->id
+            'contentId' => $article->id,
         ]), [
             'body' => 'This is a test comment',
-            'g-recaptcha-response' => 'valid-captcha'
+            'g-recaptcha-response' => 'valid-captcha',
         ]);
 
         $response->assertRedirect();
@@ -50,7 +50,7 @@ class CommentControllerTest extends TestCase
             'body' => 'This is a test comment',
             'user_id' => $user->id,
             'commentable_id' => $article->id,
-            'commentable_type' => Article::class
+            'commentable_type' => Article::class,
         ]);
     }
 
@@ -64,10 +64,10 @@ class CommentControllerTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('create.comment', [
             'model' => 'Article',
-            'contentId' => $article->id
+            'contentId' => $article->id,
         ]), [
             'body' => '',
-            'g-recaptcha-response' => 'valid-captcha'
+            'g-recaptcha-response' => 'valid-captcha',
         ]);
 
         $response->assertSessionHasErrors(['body']);
@@ -80,15 +80,15 @@ class CommentControllerTest extends TestCase
 
         $response = $this->post(route('create.comment', [
             'model' => 'Article',
-            'contentId' => $article->id
+            'contentId' => $article->id,
         ]), [
             'body' => 'Test comment',
-            'g-recaptcha-response' => 'valid-captcha'
+            'g-recaptcha-response' => 'valid-captcha',
         ]);
 
         $response->assertRedirect(route('login'));
         $this->assertDatabaseMissing('comments', [
-            'body' => 'Test comment'
+            'body' => 'Test comment',
         ]);
     }
 
@@ -100,10 +100,10 @@ class CommentControllerTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('create.comment', [
             'model' => 'InvalidModel',
-            'contentId' => 1
+            'contentId' => 1,
         ]), [
             'body' => 'Test comment',
-            'g-recaptcha-response' => 'valid-captcha'
+            'g-recaptcha-response' => 'valid-captcha',
         ]);
 
         $response->assertRedirect();
@@ -118,10 +118,10 @@ class CommentControllerTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('create.comment', [
             'model' => 'Article',
-            'contentId' => 999
+            'contentId' => 999,
         ]), [
             'body' => 'Test comment',
-            'g-recaptcha-response' => 'valid-captcha'
+            'g-recaptcha-response' => 'valid-captcha',
         ]);
 
         $response->assertRedirect();
@@ -138,7 +138,7 @@ class CommentControllerTest extends TestCase
         $comment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $article->id,
-            'commentable_type' => Article::class
+            'commentable_type' => Article::class,
         ]);
 
         $this->assertEquals($user->id, $comment->user->id);
@@ -151,7 +151,7 @@ class CommentControllerTest extends TestCase
         $article = Article::factory()->create();
         $comment = Comment::factory()->create([
             'commentable_id' => $article->id,
-            'commentable_type' => Article::class
+            'commentable_type' => Article::class,
         ]);
 
         $this->assertEquals($article->id, $comment->commentable->id);

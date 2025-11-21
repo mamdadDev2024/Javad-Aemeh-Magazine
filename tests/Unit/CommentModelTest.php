@@ -2,15 +2,15 @@
 
 namespace Tests\Unit;
 
-use App\Models\Comment;
-use App\Models\User;
-use App\Models\Magazine;
 use App\Models\Article;
+use App\Models\Comment;
 use App\Models\Event;
 use App\Models\Khabar;
+use App\Models\Magazine;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class CommentModelTest extends TestCase
 {
@@ -19,7 +19,7 @@ class CommentModelTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create roles
         Role::create(['name' => 'user']);
         Role::create(['name' => 'admin']);
@@ -30,28 +30,28 @@ class CommentModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $comment = Comment::factory()->create([
             'body' => 'This is a test comment',
             'user_id' => $user->id,
             'commentable_id' => $magazine->id,
-            'commentable_type' => Magazine::class
+            'commentable_type' => Magazine::class,
         ]);
 
         $this->assertDatabaseHas('comments', [
             'body' => 'This is a test comment',
             'user_id' => $user->id,
             'commentable_id' => $magazine->id,
-            'commentable_type' => Magazine::class
+            'commentable_type' => Magazine::class,
         ]);
     }
 
     /** @test */
     public function it_has_fillable_attributes()
     {
-        $comment = new Comment();
+        $comment = new Comment;
         $fillable = ['body', 'user_id', 'status'];
-        
+
         $this->assertEquals($fillable, $comment->getFillable());
     }
 
@@ -60,11 +60,11 @@ class CommentModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $comment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $magazine->id,
-            'commentable_type' => Magazine::class
+            'commentable_type' => Magazine::class,
         ]);
 
         $this->assertInstanceOf(User::class, $comment->user);
@@ -76,11 +76,11 @@ class CommentModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $comment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $magazine->id,
-            'commentable_type' => Magazine::class
+            'commentable_type' => Magazine::class,
         ]);
 
         $this->assertInstanceOf(Magazine::class, $comment->commentable);
@@ -93,11 +93,11 @@ class CommentModelTest extends TestCase
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
         $article = Article::factory()->create(['magazine_id' => $magazine->id]);
-        
+
         $comment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $article->id,
-            'commentable_type' => Article::class
+            'commentable_type' => Article::class,
         ]);
 
         $this->assertInstanceOf(Article::class, $comment->commentable);
@@ -109,11 +109,11 @@ class CommentModelTest extends TestCase
     {
         $user = User::factory()->create();
         $event = Event::factory()->create(['user_id' => $user->id]);
-        
+
         $comment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $event->id,
-            'commentable_type' => Event::class
+            'commentable_type' => Event::class,
         ]);
 
         $this->assertInstanceOf(Event::class, $comment->commentable);
@@ -125,11 +125,11 @@ class CommentModelTest extends TestCase
     {
         $user = User::factory()->create();
         $khabar = Khabar::factory()->create(['user_id' => $user->id]);
-        
+
         $comment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $khabar->id,
-            'commentable_type' => Khabar::class
+            'commentable_type' => Khabar::class,
         ]);
 
         $this->assertInstanceOf(Khabar::class, $comment->commentable);
@@ -141,15 +141,15 @@ class CommentModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $comment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $magazine->id,
-            'commentable_type' => Magazine::class
+            'commentable_type' => Magazine::class,
         ]);
 
         // Check if status is false (0) or null (default)
-        $this->assertFalse((bool)$comment->status);
+        $this->assertFalse((bool) $comment->status);
     }
 
     /** @test */
@@ -157,17 +157,17 @@ class CommentModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $comment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $magazine->id,
             'commentable_type' => Magazine::class,
-            'status' => false
+            'status' => false,
         ]);
 
         $comment->update(['status' => true]);
 
-        $this->assertTrue((bool)$comment->fresh()->status);
+        $this->assertTrue((bool) $comment->fresh()->status);
     }
 
     /** @test */
@@ -175,17 +175,17 @@ class CommentModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $comment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $magazine->id,
             'commentable_type' => Magazine::class,
-            'status' => true
+            'status' => true,
         ]);
 
         $comment->update(['status' => false]);
 
-        $this->assertFalse((bool)$comment->fresh()->status);
+        $this->assertFalse((bool) $comment->fresh()->status);
     }
 
     /** @test */
@@ -193,17 +193,17 @@ class CommentModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $comment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $magazine->id,
-            'commentable_type' => Magazine::class
+            'commentable_type' => Magazine::class,
         ]);
 
         $this->assertDatabaseHas('comments', ['id' => $comment->id]);
-        
+
         $user->delete();
-        
+
         $this->assertDatabaseMissing('comments', ['id' => $comment->id]);
     }
 
@@ -212,19 +212,19 @@ class CommentModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $approvedComment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $magazine->id,
             'commentable_type' => Magazine::class,
-            'status' => true
+            'status' => true,
         ]);
-        
+
         $pendingComment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $magazine->id,
             'commentable_type' => Magazine::class,
-            'status' => false
+            'status' => false,
         ]);
 
         $approvedComments = Comment::where('status', true)->get();
@@ -242,19 +242,19 @@ class CommentModelTest extends TestCase
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user1->id]);
-        
+
         $comment1 = Comment::factory()->create([
             'user_id' => $user1->id,
             'commentable_id' => $magazine->id,
             'commentable_type' => Magazine::class,
-            'body' => 'First comment'
+            'body' => 'First comment',
         ]);
-        
+
         $comment2 = Comment::factory()->create([
             'user_id' => $user2->id,
             'commentable_id' => $magazine->id,
             'commentable_type' => Magazine::class,
-            'body' => 'Second comment'
+            'body' => 'Second comment',
         ]);
 
         $this->assertEquals(2, $magazine->comments()->count());
@@ -268,19 +268,19 @@ class CommentModelTest extends TestCase
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
         $event = Event::factory()->create(['user_id' => $user->id]);
-        
+
         $magazineComment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $magazine->id,
             'commentable_type' => Magazine::class,
-            'body' => 'Comment on magazine'
+            'body' => 'Comment on magazine',
         ]);
-        
+
         $eventComment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $event->id,
             'commentable_type' => Event::class,
-            'body' => 'Comment on event'
+            'body' => 'Comment on event',
         ]);
 
         $this->assertEquals(2, $user->comments()->count());
@@ -293,12 +293,12 @@ class CommentModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $comment = Comment::factory()->create([
             'body' => 'Required comment body',
             'user_id' => $user->id,
             'commentable_id' => $magazine->id,
-            'commentable_type' => Magazine::class
+            'commentable_type' => Magazine::class,
         ]);
 
         $this->assertEquals('Required comment body', $comment->body);

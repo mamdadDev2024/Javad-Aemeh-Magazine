@@ -12,7 +12,7 @@ class RegisterRequest extends FormRequest
     public function authorize(): bool
     {
         // CHANGED: Allow guests to register
-        return !auth()->check();
+        return ! auth()->check();
     }
 
     /**
@@ -23,11 +23,11 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'g-recaptcha-response' => 'required|captcha',
-            "username" => "required|unique:users,username|min:4|max:60",
-            "email" => "required|email|unique:users,email",
-            "password" => "required|min:6|max:50|string|confirmed",
-            "number" => "required|numeric|unique:users,number"
+            'g-recaptcha-response' => 'required|captcha',
+            'username' => 'required|unique:users,username|min:4|max:60',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6|max:50|string|confirmed',
+            'number' => 'required|numeric|unique:users,number',
         ];
     }
 

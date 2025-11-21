@@ -1,10 +1,7 @@
 <?php
 
-use App\Http\Controllers\programmerController;
 use App\Http\Controllers\WriterController;
 use Illuminate\Support\Facades\Route;
-
-
 
 Route::middleware(['role:admin|super admin', 'auth'])
     ->as('writer.')

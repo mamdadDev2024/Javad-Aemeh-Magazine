@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('recommends', function (Blueprint $table) {
             $table->id();
-            $table->string("title");
-            $table->string("slug")->unique();
-            $table->string("word");
-            $table->string("pdf");
-            $table->foreignId("user_id")->constrained("users")->cascadeOnDelete();
+            $table->string('title');
+            $table->string('slug')->unique();
+            $table->string('word');
+            $table->string('pdf');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });
     }

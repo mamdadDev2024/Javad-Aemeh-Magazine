@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class View extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id' , "ip_address"];
+
+    protected $fillable = ['user_id', 'ip_address'];
 
     public function viewable()
     {

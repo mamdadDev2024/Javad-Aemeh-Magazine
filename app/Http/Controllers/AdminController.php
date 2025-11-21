@@ -4,20 +4,35 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Admin\UpdateSettingRequest;
 use App\Http\Requests\Admin\UpdateUserRoleStatusRequest;
-use App\Models\{Article, Category, Comment, Contact, Event, Khabar, Link, Magazine, Recommend, Role, Scope, Section, User};
+use App\Models\Article;
+use App\Models\Category;
+use App\Models\Comment;
+use App\Models\Contact;
+use App\Models\Event;
+use App\Models\Khabar;
+use App\Models\Link;
+use App\Models\Magazine;
+use App\Models\Recommend;
+use App\Models\Role;
+use App\Models\Scope;
+use App\Models\Section;
+use App\Models\User;
 use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{Auth, Log, Validator};
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
-    public function deleteLink(Request $request){
+    public function deleteLink(Request $request)
+    {
         $data = $request->validate([
-            "id" => "exists:links,id"
+            'id' => 'exists:links,id',
         ]);
-        $link = Link::find($data["id"]);
+        $link = Link::find($data['id']);
         $link->delete();
-        ToastMagic::success('انجام شد', 'حذف با موفقیت انجام شد!' , ['positionClass' => 'toast-top-end']);
+        ToastMagic::success('انجام شد', 'حذف با موفقیت انجام شد!', ['positionClass' => 'toast-top-end']);
+
         return redirect()->back();
     }
 
@@ -48,18 +63,18 @@ class AdminController extends Controller
                 $section->update(['content' => $path]);
             }
 
-
             if ($request->filled($section->name)) {
                 $section->update(['content' => $request->input($section->name)]);
             }
         }
-        if ($request->filled("linkName") && $request->filled("link")) {
+        if ($request->filled('linkName') && $request->filled('link')) {
             Link::create([
-                "name" => $request["linkName"],
-                "link" => $request["link"]
+                'name' => $request['linkName'],
+                'link' => $request['link'],
             ]);
         }
         ToastMagic::success('انجام شد', 'تغییرات با موفقیت ذخیره شد.');
+
         return redirect()->back();
     }
 
@@ -77,11 +92,13 @@ class AdminController extends Controller
                     $user->roles()->sync([$roleId]);
                 }
             }
-            ToastMagic::success("انجام شد" , "تغییرات با موفقیت انجام شدند!");
-            return redirect()->route("admin.index_users");
+            ToastMagic::success('انجام شد', 'تغییرات با موفقیت انجام شدند!');
+
+            return redirect()->route('admin.index_users');
         } catch (\Exception $e) {
-            Log::error("Error updating users: " . $e->getMessage());
-            ToastMagic::error("خطا!" , "عملیات انجام نشد. لطفا دوباره تلاش کنید.");
+            Log::error('Error updating users: '.$e->getMessage());
+            ToastMagic::error('خطا!', 'عملیات انجام نشد. لطفا دوباره تلاش کنید.');
+
             return redirect()->back();
         }
     }
@@ -90,44 +107,50 @@ class AdminController extends Controller
     {
         $data = $request->validate([
             'g-recaptcha-response' => 'required|captcha',
-            "role" => "required|in:admin,user|string",
-            "user" => "required|exists:users,id"
+            'role' => 'required|in:admin,user|string',
+            'user' => 'required|exists:users,id',
         ]);
         try {
-            $user = User::find($data["user"]);
-            $user->syncRoles($data["role"]);
-            ToastMagic::success("انجام شد", "مقام کاربر $user->username با موفقیت به $request->role تغییر کرد");
+            $user = User::find($data['user']);
+            $user->syncRoles($data['role']);
+            ToastMagic::success('انجام شد', "مقام کاربر $user->username با موفقیت به $request->role تغییر کرد");
+
             return back();
         } catch (\Exception $e) {
-            Log::error("in changing user role => " . $e->getMessage());
-            ToastMagic::error("خطا", "در فرآیند مورد نظر مشکلی به وجود آمد!");
+            Log::error('in changing user role => '.$e->getMessage());
+            ToastMagic::error('خطا', 'در فرآیند مورد نظر مشکلی به وجود آمد!');
+
             return back();
         }
     }
 
     public function indexContacts()
     {
-        $contacts = Contact::with("user")->paginate(10);
-        return view("admin-panel.contacts", compact("contacts"));
+        $contacts = Contact::with('user')->paginate(10);
+
+        return view('admin-panel.contacts', compact('contacts'));
     }
 
     public function panel()
     {
-        $scopes = Scope::all()->keyBy("name") ?? null;
-        $categories = Category::all()->keyBy("name") ?? null;
-        $sections = Section::all()->keyBy("name") ?? null;
+        $scopes = Scope::all()->keyBy('name') ?? null;
+        $categories = Category::all()->keyBy('name') ?? null;
+        $sections = Section::all()->keyBy('name') ?? null;
         $links = Link::all()->toArray() ?? null;
-        return view("admin-panel.panel", compact("sections", "scopes", "categories" , "links"));
+
+        return view('admin-panel.panel', compact('sections', 'scopes', 'categories', 'links'));
     }
 
     public function approveAllComments()
     {
-        if (!$this->hasAdminRole()) {
+        if (! $this->hasAdminRole()) {
             ToastMagic::error('خطا', 'شما مجوز لازم برای این عملیات را ندارید');
+
             return back();
         }
         Comment::where('status', 0)->update(['status' => 1]);
         ToastMagic::success('انجام شد', 'همه‌ی کامنت‌ها تایید شدند');
+
         return back();
     }
 
@@ -179,104 +202,115 @@ class AdminController extends Controller
     public function userDestroy($id)
     {
         $user = Auth::user();
+
         return $this->destroyUserById($id, $user);
     }
 
     public function indexUsers()
     {
-        $roles = Role::where("name", "!=", "super admin")->get(["name", "id"]);
-        $users = User::where("username", "!=", "admin")->paginate(10);
-        return view("admin-panel.users", compact("users", "roles"));
-    }
+        $roles = Role::where('name', '!=', 'super admin')->get(['name', 'id']);
+        $users = User::where('username', '!=', 'admin')->paginate(10);
 
+        return view('admin-panel.users', compact('users', 'roles'));
+    }
 
     public function toggleStatus($id)
     {
         try {
             $user = User::findOrFail($id);
-            $user->status = !$user->status;
+            $user->status = ! $user->status;
             $user->save();
 
             ToastMagic::success('انجام شد', 'وضعیت کاربر با موفقیت تغییر یافت');
+
             return back();
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             ToastMagic::error('خطا', 'تغییر وضعیت کاربر ناموفق بود');
+
             return back();
         }
     }
 
     public function indexContents()
     {
-        $magazines = Magazine::with("user")
-            ->withCount("articles as articles_count")
+        $magazines = Magazine::with('user')
+            ->withCount('articles as articles_count')
             ->paginate(20, ['*'], 'magazines_page');
 
-        $events = Event::with("user")
+        $events = Event::with('user')
             ->paginate(20, ['*'], 'events_page');
 
-        $news = Khabar::with("user")
+        $news = Khabar::with('user')
             ->paginate(20, ['*'], 'news_page');
 
-        $recommends = Recommend::with("user")
+        $recommends = Recommend::with('user')
             ->paginate(20, ['*'], 'recommends_page');
 
-        return view("admin-panel.posts", compact("magazines", "events", "news", "recommends"));
+        return view('admin-panel.posts', compact('magazines', 'events', 'news', 'recommends'));
     }
-
 
     public function destroyUser($id)
     {
         $user = Auth::user();
+
         return $this->destroyUserById($id, $user);
     }
 
     public function showComment($id)
     {
         $comment = Comment::findOrFail($id);
-        return view("admin-panel.show.comment", compact("comment"));
+
+        return view('admin-panel.show.comment', compact('comment'));
     }
 
     public function userDetail($id)
     {
         $user = User::findOrFail($id);
-        return view("admin-panel.show.user", compact("user"));
+
+        return view('admin-panel.show.user', compact('user'));
     }
 
     public function suggestDetail($id)
     {
         $suggest = Article::findOrFail($id);
-        return view("admin-panel.show.suggest", compact("suggest"));
+
+        return view('admin-panel.show.suggest', compact('suggest'));
     }
 
     public function articleDetail($title)
     {
-        $article = Article::where("title", $title)->firstOrFail();
-        return view("admin-panel.show.article", compact("article"));
+        $article = Article::where('title', $title)->firstOrFail();
+
+        return view('admin-panel.show.article', compact('article'));
     }
 
     public function newsDetail($title)
     {
-        $new = Khabar::where("title", $title)->firstOrFail();
-        return view("admin-panel.show.new", compact("new"));
+        $new = Khabar::where('title', $title)->firstOrFail();
+
+        return view('admin-panel.show.new', compact('new'));
     }
 
     public function eventDetail($title)
     {
-        $event = Event::where("title", $title)->firstOrFail();
-        return view("admin-panel.show.event", compact("event"));
+        $event = Event::where('title', $title)->firstOrFail();
+
+        return view('admin-panel.show.event', compact('event'));
     }
 
     public function indexComments()
     {
-        $notConfirmedComments = Comment::where("status", false)->with(["user" , 'commentable'])->paginate(40);
+        $notConfirmedComments = Comment::where('status', false)->with(['user', 'commentable'])->paginate(40);
 
-        return view("admin-panel.comments", compact("notConfirmedComments"));
+        return view('admin-panel.comments', compact('notConfirmedComments'));
     }
 
-    public function contactDelete($id){
+    public function contactDelete($id)
+    {
         $contact = Contact::class;
-        return $this->deleteModel($contact , $id);
+
+        return $this->deleteModel($contact, $id);
     }
 
     public function createCategory(Request $request)
@@ -289,9 +323,7 @@ class AdminController extends Controller
         return $this->createModel($request, Scope::class, 'سطح با موفقیت ایجاد شد', 'خطا در ایجاد سطح');
     }
 
-
-
-    function createModel(Request $request, string $model, string $successMessage, string $errorMessage, string $uniqueColumn = 'name')
+    public function createModel(Request $request, string $model, string $successMessage, string $errorMessage, string $uniqueColumn = 'name')
     {
         $data = $request->validate([
             'g-recaptcha-response' => 'required|captcha',
@@ -301,10 +333,12 @@ class AdminController extends Controller
         try {
             $model::create($data);
             ToastMagic::success('موفقیت', $successMessage);
+
             return back();
         } catch (\Throwable $e) {
-            Log::error("Failed to create {$model} => " . $e->getMessage());
+            Log::error("Failed to create {$model} => ".$e->getMessage());
             ToastMagic::error('خطا', $errorMessage);
+
             return back();
         }
     }
@@ -321,11 +355,13 @@ class AdminController extends Controller
         if ($this->hasAdminRole() && $model && $model->status == 0) {
             $model->status = 1;
             $model->save();
-            ToastMagic::success("انجام شد", "مورد با موفقیت تایید شد");
+            ToastMagic::success('انجام شد', 'مورد با موفقیت تایید شد');
+
             return back();
 
         }
-        ToastMagic::error("خطا", "خطا در تایید مورد");
+        ToastMagic::error('خطا', 'خطا در تایید مورد');
+
         return back();
 
     }
@@ -335,25 +371,28 @@ class AdminController extends Controller
         $model = $modelClass::find($id);
         if ($this->hasAdminRole() && $model) {
             $model->delete();
-            ToastMagic::success("انجام شد", "مورد با موفقیت حذف شد");
+            ToastMagic::success('انجام شد', 'مورد با موفقیت حذف شد');
+
             return back();
         }
-        ToastMagic::error("خطا", "خطا در حذف مورد");
+        ToastMagic::error('خطا', 'خطا در حذف مورد');
+
         return back();
     }
 
     private function canDeleteUser($user, $currentUser = null)
     {
         $response = true;
-        if (!$currentUser) {
+        if (! $currentUser) {
             $response = false;
         }
-        if ($user and $user->id == $currentUser->id and !$user->can("index user")) {
+        if ($user and $user->id == $currentUser->id and ! $user->can('index user')) {
             $response = true;
         }
-        if ($currentUser->hasRole("super admin") and $currentUser->id == $user->id) {
+        if ($currentUser->hasRole('super admin') and $currentUser->id == $user->id) {
             $response = false;
         }
+
         return $response;
     }
 
@@ -364,9 +403,11 @@ class AdminController extends Controller
         if ($this->canDeleteUser($user, $currentUser)) {
             $user->delete();
             ToastMagic::success('انجام شد', 'حذف کاربر موفقیت آمیز بود');
+
             return back();
         } else {
             ToastMagic::error('خطا', 'کاربر مورد نظر پیدا نشد');
+
             return back();
         }
     }

@@ -5,8 +5,8 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
-use Tests\TestCase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class AuthControllerTest extends TestCase
 {
@@ -15,7 +15,7 @@ class AuthControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create roles
         Role::create(['name' => 'user']);
         Role::create(['name' => 'admin']);
@@ -46,13 +46,13 @@ class AuthControllerTest extends TestCase
     {
         $user = User::factory()->create([
             'username' => 'testuser',
-            'password' => Hash::make('password123')
+            'password' => Hash::make('password123'),
         ]);
         $user->assignRole('user');
 
         $response = $this->post(route('do_login'), [
             'username' => 'testuser',
-            'password' => 'password123'
+            'password' => 'password123',
         ]);
 
         $response->assertRedirect(route('home'));
@@ -64,12 +64,12 @@ class AuthControllerTest extends TestCase
     {
         $user = User::factory()->create([
             'username' => 'testuser',
-            'password' => Hash::make('password123')
+            'password' => Hash::make('password123'),
         ]);
 
         $response = $this->post(route('do_login'), [
             'username' => 'testuser',
-            'password' => 'wrongpassword'
+            'password' => 'wrongpassword',
         ]);
 
         $response->assertRedirect();
@@ -81,7 +81,7 @@ class AuthControllerTest extends TestCase
     {
         $response = $this->post(route('do_login'), [
             'username' => '',
-            'password' => ''
+            'password' => '',
         ]);
 
         $response->assertSessionHasErrors(['username', 'password']);
@@ -95,15 +95,15 @@ class AuthControllerTest extends TestCase
             'email' => 'newuser@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-            'number' => '09123456789'
+            'number' => '09123456789',
         ]);
 
         $response->assertRedirect(route('home'));
-        
+
         $this->assertDatabaseHas('users', [
             'username' => 'newuser',
             'email' => 'newuser@example.com',
-            'number' => '09123456789'
+            'number' => '09123456789',
         ]);
 
         $user = User::where('username', 'newuser')->first();
@@ -119,14 +119,14 @@ class AuthControllerTest extends TestCase
             'email' => 'invalid-email',
             'password' => '123',
             'password_confirmation' => '456',
-            'number' => ''
+            'number' => '',
         ]);
 
         $response->assertSessionHasErrors([
-            'username', 
-            'email', 
-            'password', 
-            'number'
+            'username',
+            'email',
+            'password',
+            'number',
         ]);
     }
 
@@ -140,7 +140,7 @@ class AuthControllerTest extends TestCase
             'email' => 'new@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-            'number' => '09123456789'
+            'number' => '09123456789',
         ]);
 
         $response->assertSessionHasErrors(['username']);
@@ -156,7 +156,7 @@ class AuthControllerTest extends TestCase
             'email' => 'existing@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-            'number' => '09123456789'
+            'number' => '09123456789',
         ]);
 
         $response->assertSessionHasErrors(['email']);
@@ -188,13 +188,13 @@ class AuthControllerTest extends TestCase
     {
         $user = User::factory()->create([
             'username' => 'testuser',
-            'number' => '09123456789'
+            'number' => '09123456789',
         ]);
         $user->assignRole('user');
 
         $response = $this->post(route('do_forget'), [
             'username' => 'testuser',
-            'number' => '09123456789'
+            'number' => '09123456789',
         ]);
 
         $response->assertRedirect(route('reset'));
@@ -206,13 +206,13 @@ class AuthControllerTest extends TestCase
     {
         $superAdmin = User::factory()->create([
             'username' => 'superadmin',
-            'number' => '09123456789'
+            'number' => '09123456789',
         ]);
         $superAdmin->assignRole('super admin');
 
         $response = $this->post(route('do_forget'), [
             'username' => 'superadmin',
-            'number' => '09123456789'
+            'number' => '09123456789',
         ]);
 
         $response->assertRedirect('/');
@@ -224,7 +224,7 @@ class AuthControllerTest extends TestCase
     {
         $response = $this->post(route('do_forget'), [
             'username' => 'nonexistent',
-            'number' => '09123456789'
+            'number' => '09123456789',
         ]);
 
         $response->assertRedirect();
@@ -235,9 +235,9 @@ class AuthControllerTest extends TestCase
     public function it_shows_reset_password_page_with_valid_session()
     {
         $user = User::factory()->create();
-        
+
         $response = $this->withSession(['reset_user_id' => $user->id])
-                         ->get(route('reset'));
+            ->get(route('reset'));
 
         $response->assertStatus(200);
         $response->assertViewIs('auth.reset');
@@ -255,19 +255,19 @@ class AuthControllerTest extends TestCase
     public function it_can_reset_password_with_valid_session()
     {
         $user = User::factory()->create([
-            'password' => Hash::make('oldpassword')
+            'password' => Hash::make('oldpassword'),
         ]);
 
         $response = $this->withSession(['reset_user_id' => $user->id])
-                         ->post(route('do_reset'), [
-                             'password' => 'newpassword123',
-                             'password_confirmation' => 'newpassword123',
-                             'g-recaptcha-response' => 'valid-captcha'
-                         ]);
+            ->post(route('do_reset'), [
+                'password' => 'newpassword123',
+                'password_confirmation' => 'newpassword123',
+                'g-recaptcha-response' => 'valid-captcha',
+            ]);
 
         $response->assertRedirect(route('home'));
         $response->assertSessionMissing('reset_user_id');
-        
+
         $user->refresh();
         $this->assertTrue(Hash::check('newpassword123', $user->password));
     }
@@ -278,10 +278,10 @@ class AuthControllerTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->withSession(['reset_user_id' => $user->id])
-                         ->post(route('do_reset'), [
-                             'password' => '123',
-                             'password_confirmation' => '456'
-                         ]);
+            ->post(route('do_reset'), [
+                'password' => '123',
+                'password_confirmation' => '456',
+            ]);
 
         $response->assertSessionHasErrors(['password', 'g-recaptcha-response']);
     }
@@ -292,7 +292,7 @@ class AuthControllerTest extends TestCase
         $response = $this->post(route('do_reset'), [
             'password' => 'newpassword123',
             'password_confirmation' => 'newpassword123',
-            'g-recaptcha-response' => 'valid-captcha'
+            'g-recaptcha-response' => 'valid-captcha',
         ]);
 
         $response->assertRedirect(route('home'));
@@ -304,7 +304,7 @@ class AuthControllerTest extends TestCase
         // This test simulates database errors or other exceptions
         $response = $this->post(route('do_login'), [
             'username' => 'testuser',
-            'password' => 'password123'
+            'password' => 'password123',
         ]);
 
         // Should redirect back on error
@@ -317,7 +317,7 @@ class AuthControllerTest extends TestCase
         // Create a user to cause potential conflicts
         User::factory()->create([
             'username' => 'testuser',
-            'email' => 'test@example.com'
+            'email' => 'test@example.com',
         ]);
 
         $response = $this->post(route('do_register'), [
@@ -325,7 +325,7 @@ class AuthControllerTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-            'number' => '09123456789'
+            'number' => '09123456789',
         ]);
 
         $response->assertSessionHasErrors();
@@ -339,7 +339,7 @@ class AuthControllerTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'password123',
             'password_confirmation' => 'differentpassword',
-            'number' => '09123456789'
+            'number' => '09123456789',
         ]);
 
         $response->assertSessionHasErrors(['password']);
@@ -353,7 +353,7 @@ class AuthControllerTest extends TestCase
             'email' => 'test@example.com',
             'password' => '123',
             'password_confirmation' => '123',
-            'number' => '09123456789'
+            'number' => '09123456789',
         ]);
 
         $response->assertSessionHasErrors(['password']);

@@ -18,6 +18,7 @@ class Category extends Model
     {
         return $this->morphedByMany(Article::class, 'categorizable');
     }
+
     /**
      * Get all of the articles associated with the category.
      */
@@ -31,7 +32,6 @@ class Category extends Model
         return $this->morphedByMany(Khabar::class, 'categorizable');
     }
 
-    
     public function magazines()
     {
         return $this->morphedByMany(Magazine::class, 'categorizable');

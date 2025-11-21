@@ -11,7 +11,7 @@ class LoginRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return !auth()->check();
+        return ! auth()->check();
     }
 
     /**
@@ -22,9 +22,9 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'g-recaptcha-response' => 'required|captcha',
-            "username" => "required|min:4|max:60",
-            "password" => "required"
+            'g-recaptcha-response' => 'required|captcha',
+            'username' => 'required|min:4|max:60',
+            'password' => 'required',
         ];
     }
 

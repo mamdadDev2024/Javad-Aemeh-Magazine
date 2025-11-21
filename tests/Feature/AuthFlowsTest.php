@@ -26,5 +26,3 @@ class AuthFlowsTest extends TestCase
         ])->assertOk();
     }
 }
-
-

@@ -10,13 +10,15 @@ class Recommend extends Model
     use HasSlug;
 
     protected $fillable = [
-        "title",
-        "user_id",
-        "slug",
-        "pdf",
-        "word"
+        'title',
+        'user_id',
+        'slug',
+        'pdf',
+        'word',
     ];
-    public function user(){
+
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 }

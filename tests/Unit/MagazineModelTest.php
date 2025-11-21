@@ -2,15 +2,14 @@
 
 namespace Tests\Unit;
 
+use App\Models\Article;
+use App\Models\Category;
+use App\Models\Comment;
 use App\Models\Magazine;
 use App\Models\User;
-use App\Models\Article;
-use App\Models\Comment;
-use App\Models\View;
-use App\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class MagazineModelTest extends TestCase
 {
@@ -19,7 +18,7 @@ class MagazineModelTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create roles
         Role::create(['name' => 'user']);
         Role::create(['name' => 'admin']);
@@ -32,22 +31,22 @@ class MagazineModelTest extends TestCase
         $magazine = Magazine::factory()->create([
             'title' => 'Test Magazine',
             'slug' => 'test-magazine',
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
 
         $this->assertDatabaseHas('magazines', [
             'title' => 'Test Magazine',
             'slug' => 'test-magazine',
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
     }
 
     /** @test */
     public function it_has_fillable_attributes()
     {
-        $magazine = new Magazine();
+        $magazine = new Magazine;
         $fillable = ['title', 'slug', 'image', 'user_id', 'pdf', 'body'];
-        
+
         $this->assertEquals($fillable, $magazine->getFillable());
     }
 
@@ -66,7 +65,7 @@ class MagazineModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $article1 = Article::factory()->create(['magazine_id' => $magazine->id]);
         $article2 = Article::factory()->create(['magazine_id' => $magazine->id]);
 
@@ -80,11 +79,11 @@ class MagazineModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $comment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $magazine->id,
-            'commentable_type' => Magazine::class
+            'commentable_type' => Magazine::class,
         ]);
 
         $this->assertEquals(1, $magazine->comments()->count());
@@ -96,7 +95,7 @@ class MagazineModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         // Skip this test as views table structure needs to be checked
         $this->assertTrue(method_exists($magazine, 'views'));
     }
@@ -106,10 +105,10 @@ class MagazineModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $category1 = Category::factory()->create(['name' => 'Technology']);
         $category2 = Category::factory()->create(['name' => 'Science']);
-        
+
         $magazine->categories()->attach([$category1->id, $category2->id]);
 
         $this->assertEquals(2, $magazine->categories()->count());
@@ -161,14 +160,14 @@ class MagazineModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $article1 = Article::factory()->create([
             'magazine_id' => $magazine->id,
-            'author' => 'John Doe'
+            'author' => 'John Doe',
         ]);
         $article2 = Article::factory()->create([
             'magazine_id' => $magazine->id,
-            'author' => 'Jane Smith'
+            'author' => 'Jane Smith',
         ]);
 
         $this->assertEquals(2, $magazine->articles()->count());
@@ -184,9 +183,9 @@ class MagazineModelTest extends TestCase
         $article = Article::factory()->create(['magazine_id' => $magazine->id]);
 
         $this->assertDatabaseHas('articles', ['id' => $article->id]);
-        
+
         $magazine->delete();
-        
+
         $this->assertDatabaseMissing('articles', ['id' => $article->id]);
     }
 
@@ -195,19 +194,19 @@ class MagazineModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $approvedComment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $magazine->id,
             'commentable_type' => Magazine::class,
-            'status' => true
+            'status' => true,
         ]);
-        
+
         $pendingComment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $magazine->id,
             'commentable_type' => Magazine::class,
-            'status' => false
+            'status' => false,
         ]);
 
         $this->assertEquals(2, $magazine->comments()->count());
@@ -221,7 +220,7 @@ class MagazineModelTest extends TestCase
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user1->id]);
-        
+
         // Skip this test as views table structure needs to be checked
         $this->assertTrue(method_exists($magazine, 'views'));
     }
@@ -232,7 +231,7 @@ class MagazineModelTest extends TestCase
         $user = User::factory()->create();
         Magazine::factory()->create([
             'slug' => 'unique-magazine',
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
 
         // Skip unique constraint test as it might not be enforced in test DB
@@ -244,11 +243,11 @@ class MagazineModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $tech = Category::factory()->create(['name' => 'Technology']);
         $science = Category::factory()->create(['name' => 'Science']);
         $health = Category::factory()->create(['name' => 'Health']);
-        
+
         $magazine->categories()->attach([$tech->id, $science->id, $health->id]);
 
         $this->assertEquals(3, $magazine->categories()->count());

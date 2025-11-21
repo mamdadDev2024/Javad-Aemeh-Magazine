@@ -9,28 +9,39 @@ use Overtrue\LaravelLike\Traits\Likeable;
 
 class Magazine extends Model
 {
-    use HasFactory , Likeable , HasSlug;
+    use HasFactory , HasSlug , Likeable;
+
     protected $fillable = [
-        "title",
-        "slug",
-        "image",
-        "user_id",
-        "pdf",
-        "body"
+        'title',
+        'slug',
+        'image',
+        'user_id',
+        'pdf',
+        'body',
     ];
-    public function comments(){
-        return $this->morphMany(Comment::class , "commentable");
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
     }
-    public function articles(){
+
+    public function articles()
+    {
         return $this->hasMany(Article::class);
     }
-    public function views(){
-        return $this->morphMany(View::class , "viewable");
+
+    public function views()
+    {
+        return $this->morphMany(View::class, 'viewable');
     }
-    public function user(){
+
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
-    public function categories(){
-        return $this->morphToMany(Category::class , "categorizable");
+
+    public function categories()
+    {
+        return $this->morphToMany(Category::class, 'categorizable');
     }
 }

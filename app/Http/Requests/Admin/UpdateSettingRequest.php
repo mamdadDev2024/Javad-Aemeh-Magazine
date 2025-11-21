@@ -25,10 +25,9 @@ class UpdateSettingRequest extends FormRequest
         return [
             'new_category' => 'nullable|string|max:255',
             'new_scope' => 'nullable|string|max:255',
-            // CHANGED: sections are dynamic via SectionController; keep this relaxed
             'sections.*' => 'nullable|string',
-            'linkName' => "nullable|string",
-            "link" => "nullable|string",
+            'linkName' => 'nullable|string',
+            'link' => 'nullable|string',
             'titleHeader' => 'nullable|file|image|max:2048',
             'defaultContentImage' => 'nullable|file|image|max:2048',
             'titleFooter' => 'nullable|file|image|max:2048',

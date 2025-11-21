@@ -2,16 +2,16 @@
 
 namespace Tests\Unit;
 
-use App\Models\User;
-use App\Models\Magazine;
 use App\Models\Comment;
+use App\Models\Contact;
 use App\Models\Event;
 use App\Models\Khabar;
-use App\Models\Contact;
+use App\Models\Magazine;
 use App\Models\Recommend;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class UserModelTest extends TestCase
 {
@@ -20,7 +20,7 @@ class UserModelTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create roles
         Role::create(['name' => 'user']);
         Role::create(['name' => 'admin']);
@@ -34,22 +34,22 @@ class UserModelTest extends TestCase
         $user = User::factory()->create([
             'username' => 'testuser',
             'email' => 'test@example.com',
-            'number' => '09123456789'
+            'number' => '09123456789',
         ]);
 
         $this->assertDatabaseHas('users', [
             'username' => 'testuser',
             'email' => 'test@example.com',
-            'number' => '09123456789'
+            'number' => '09123456789',
         ]);
     }
 
     /** @test */
     public function it_has_fillable_attributes()
     {
-        $user = new User();
+        $user = new User;
         $fillable = ['name', 'username', 'age', 'email', 'status', 'password', 'number'];
-        
+
         $this->assertEquals($fillable, $user->getFillable());
     }
 
@@ -58,7 +58,7 @@ class UserModelTest extends TestCase
     {
         $user = User::factory()->create();
         $hidden = $user->getHidden();
-        
+
         $this->assertContains('password', $hidden);
         $this->assertContains('remember_token', $hidden);
     }
@@ -66,9 +66,9 @@ class UserModelTest extends TestCase
     /** @test */
     public function it_casts_password_to_hashed()
     {
-        $user = new User();
+        $user = new User;
         $casts = $user->getCasts();
-        
+
         $this->assertEquals('hashed', $casts['password']);
     }
 
@@ -88,11 +88,11 @@ class UserModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $comment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $magazine->id,
-            'commentable_type' => Magazine::class
+            'commentable_type' => Magazine::class,
         ]);
 
         $this->assertTrue($user->comments()->exists());
@@ -125,7 +125,7 @@ class UserModelTest extends TestCase
         $user = User::factory()->create();
         $contact = Contact::create([
             'body' => 'Test contact message',
-            'phone' => '09123456789'
+            'phone' => '09123456789',
         ]);
 
         // Contact model might not have user_id relationship
@@ -141,7 +141,7 @@ class UserModelTest extends TestCase
             'slug' => 'test-recommendation',
             'pdf' => 'test.pdf',
             'word' => 'test.docx',
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
 
         $this->assertTrue($user->recommends()->exists());

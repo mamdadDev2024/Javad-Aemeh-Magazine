@@ -7,5 +7,5 @@ return [
     'App\Models\Khabar' => 'تعداد اخبار',
     'App\Models\Event' => 'تعداد رویدادها',
     'App\Models\Comment' => 'تعداد نظرات',
-    "App\Models\Magazine" => " تعداد نشریات"
+    "App\Models\Magazine" => ' تعداد نشریات',
 ];

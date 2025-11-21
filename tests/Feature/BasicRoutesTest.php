@@ -2,16 +2,14 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Magazine;
 use App\Models\Article;
 use App\Models\Event;
 use App\Models\Khabar;
-use App\Models\Category;
-use App\Models\Scope;
+use App\Models\Magazine;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class BasicRoutesTest extends TestCase
 {
@@ -20,7 +18,7 @@ class BasicRoutesTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create roles
         Role::create(['name' => 'user']);
         Role::create(['name' => 'admin']);
@@ -80,10 +78,10 @@ class BasicRoutesTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $magazine = Magazine::factory()->create([
             'user_id' => $user->id,
-            'slug' => 'test-magazine'
+            'slug' => 'test-magazine',
         ]);
 
         $response = $this->get(route('Magazine.show', $magazine->slug));
@@ -94,11 +92,11 @@ class BasicRoutesTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
         $article = Article::factory()->create([
             'magazine_id' => $magazine->id,
-            'slug' => 'test-article'
+            'slug' => 'test-article',
         ]);
 
         $response = $this->get(route('Article.show', $article->slug));
@@ -109,10 +107,10 @@ class BasicRoutesTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $event = Event::factory()->create([
             'user_id' => $user->id,
-            'slug' => 'test-event'
+            'slug' => 'test-event',
         ]);
 
         $response = $this->get(route('Event.show', $event->slug));
@@ -123,10 +121,10 @@ class BasicRoutesTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $khabar = Khabar::factory()->create([
             'user_id' => $user->id,
-            'slug' => 'test-news'
+            'slug' => 'test-news',
         ]);
 
         $response = $this->get(route('Khabar.show', $khabar->slug));
@@ -137,13 +135,13 @@ class BasicRoutesTest extends TestCase
     {
         $user = User::factory()->create([
             'username' => 'testuser',
-            'password' => bcrypt('password123')
+            'password' => bcrypt('password123'),
         ]);
         $user->assignRole('user');
 
         $response = $this->post(route('do_login'), [
             'username' => 'testuser',
-            'password' => 'password123'
+            'password' => 'password123',
         ]);
 
         $response->assertRedirect(route('home'));
@@ -157,14 +155,14 @@ class BasicRoutesTest extends TestCase
             'email' => 'newuser@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-            'number' => '09123456789'
+            'number' => '09123456789',
         ]);
 
         $response->assertRedirect(route('home'));
-        
+
         $this->assertDatabaseHas('users', [
             'username' => 'newuser',
-            'email' => 'newuser@example.com'
+            'email' => 'newuser@example.com',
         ]);
     }
 
@@ -172,21 +170,21 @@ class BasicRoutesTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
 
         $response = $this->actingAs($user)->post(route('create.comment', [
             'model' => 'Magazine',
-            'contentId' => $magazine->id
+            'contentId' => $magazine->id,
         ]), [
-            'body' => 'This is a test comment'
+            'body' => 'This is a test comment',
         ]);
 
         $response->assertRedirect();
-        
+
         $this->assertDatabaseHas('comments', [
             'body' => 'This is a test comment',
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
     }
 
@@ -194,12 +192,12 @@ class BasicRoutesTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
 
         $response = $this->actingAs($user)->post(route('toggle.like', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
 
         $response->assertRedirect();
@@ -210,15 +208,15 @@ class BasicRoutesTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         Magazine::factory()->create([
             'user_id' => $user->id,
-            'title' => 'Laravel Magazine'
+            'title' => 'Laravel Magazine',
         ]);
 
         $response = $this->get(route('search', [
             'search' => 'Laravel',
-            'type' => 'all'
+            'type' => 'all',
         ]));
 
         $response->assertStatus(200);
@@ -228,14 +226,14 @@ class BasicRoutesTest extends TestCase
     {
         $response = $this->post(route('do.contact'), [
             'body' => 'Test contact message',
-            'phone' => '09123456789'
+            'phone' => '09123456789',
         ]);
 
         $response->assertRedirect(route('home'));
-        
+
         $this->assertDatabaseHas('contacts', [
             'body' => 'Test contact message',
-            'phone' => '09123456789'
+            'phone' => '09123456789',
         ]);
     }
 }

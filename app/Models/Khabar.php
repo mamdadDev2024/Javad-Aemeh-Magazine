@@ -9,34 +9,41 @@ use Overtrue\LaravelLike\Traits\Likeable;
 
 class Khabar extends Model
 {
-    use HasFactory, Likeable , HasSlug;
+    use HasFactory, HasSlug , Likeable;
+
     protected $fillable = [
-        "title",
-        "body",
-        "user_id",
-        "image",
-        "pdf",
-        "scope_id",
-        "slug"
+        'title',
+        'body',
+        'user_id',
+        'image',
+        'pdf',
+        'scope_id',
+        'slug',
     ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+
     public function comments()
     {
-        return $this->morphMany(Comment::class, "commentable");
+        return $this->morphMany(Comment::class, 'commentable');
     }
-    public function scope(){
+
+    public function scope()
+    {
         return $this->belongsTo(Scope::class);
     }
+
     public function views()
     {
-        return $this->morphMany(View::class, "viewable");
+        return $this->morphMany(View::class, 'viewable');
     }
+
     public function categories()
     {
-        return $this->morphToMany(Category::class, "categorizable");
+        return $this->morphToMany(Category::class, 'categorizable');
     }
 
     /**
@@ -46,6 +53,7 @@ class Khabar extends Model
     {
         return 'slug';
     }
+
     public function scopePublished($query)
     {
         return $query->where('status', 1);

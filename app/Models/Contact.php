@@ -10,8 +10,8 @@ class Contact extends Model
     use HasFactory;
 
     protected $fillable = [
-        "body",
-        "phone"
+        'body',
+        'phone',
     ];
 
     public function user()

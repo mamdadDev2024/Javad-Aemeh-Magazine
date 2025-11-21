@@ -11,7 +11,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles, Liker;
+    use HasFactory, HasRoles, Liker, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -20,12 +20,12 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        "username",
-        "age",
+        'username',
+        'age',
         'email',
-        "status",
+        'status',
         'password',
-        "number",
+        'number',
     ];
 
     /**
@@ -50,26 +50,32 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
     public function recommends()
     {
         return $this->hasMany(Recommend::class);
     }
+
     public function comments()
     {
         return $this->hasMany(Comment::class);
     }
+
     public function magazines()
     {
         return $this->hasMany(Magazine::class);
     }
+
     public function news()
     {
         return $this->hasMany(khabar::class);
     }
+
     public function events()
     {
         return $this->hasMany(Event::class);
     }
+
     public function contacts()
     {
         return $this->hasMany(Contact::class);

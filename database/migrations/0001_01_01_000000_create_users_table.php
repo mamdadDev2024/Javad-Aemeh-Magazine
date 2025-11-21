@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('username')->unique();
             $table->string('email')->unique()->nullable();
-            $table->string('image')->default("attachments/personal-image.png");
-            $table->boolean("status")->default(1);
-            $table->bigInteger("number")->unique();
+            $table->string('image')->default('attachments/personal-image.png');
+            $table->boolean('status')->default(1);
+            $table->bigInteger('number')->unique();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

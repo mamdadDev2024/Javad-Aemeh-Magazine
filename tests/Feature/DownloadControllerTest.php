@@ -5,8 +5,8 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
-use Tests\TestCase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class DownloadControllerTest extends TestCase
 {
@@ -36,7 +36,7 @@ class DownloadControllerTest extends TestCase
         Storage::disk('public')->put($filePath, 'fake content');
 
         $response = $this->actingAs($user)->post(route('download'), [
-            'url' => $filePath
+            'url' => $filePath,
         ]);
 
         $response->assertStatus(200);
@@ -51,7 +51,7 @@ class DownloadControllerTest extends TestCase
         $user->assignRole('user');
 
         $response = $this->actingAs($user)->post(route('download'), [
-            'url' => 'nonexistent-file.pdf'
+            'url' => 'nonexistent-file.pdf',
         ]);
 
         $response->assertRedirect();
@@ -65,7 +65,7 @@ class DownloadControllerTest extends TestCase
         $user->assignRole('user');
 
         $response = $this->actingAs($user)->post(route('download'), [
-            'url' => ''
+            'url' => '',
         ]);
 
         $response->assertSessionHasErrors(['url']);
@@ -79,7 +79,7 @@ class DownloadControllerTest extends TestCase
 
         // Simulate an error by passing invalid data
         $response = $this->actingAs($user)->post(route('download'), [
-            'url' => null
+            'url' => null,
         ]);
 
         $response->assertRedirect();
@@ -94,7 +94,7 @@ class DownloadControllerTest extends TestCase
         Storage::disk('public')->put($filePath, 'fake content');
 
         $response = $this->post(route('download'), [
-            'url' => $filePath
+            'url' => $filePath,
         ]);
 
         $response->assertRedirect(route('login'));
@@ -112,7 +112,7 @@ class DownloadControllerTest extends TestCase
         Storage::disk('public')->put($filePath, 'fake content');
 
         $response = $this->actingAs($user)->post(route('download'), [
-            'url' => $filePath
+            'url' => $filePath,
         ]);
 
         $response->assertStatus(200);

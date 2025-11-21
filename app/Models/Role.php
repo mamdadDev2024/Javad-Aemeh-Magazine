@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Spatie\Permission\Models\Role as ModelsRole;
-use App\Models\Permission;
 
 class Role extends ModelsRole
 {
     public const USER_ROLE = 'user';
+
     public const SUPER_ADMIN_ROLE = 'super admin';
+
     public const ADMIN_ROLE = 'admin';
 
     public static $roles = [
@@ -26,6 +27,6 @@ class Role extends ModelsRole
             Permission::PERMISSION_INDEX_COMMENT,
             Permission::PERMISSION_REPLAY_CONTACT,
             Permission::PERMISSION_VISIT_REPORT,
-        ]
+        ],
     ];
 }

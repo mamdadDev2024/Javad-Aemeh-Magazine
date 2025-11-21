@@ -23,8 +23,8 @@ class SearchRequest extends FormRequest
     {
         // CHANGED: Align allowed types with controllers/views (Khabar instead of New)
         return [
-            "search" => "nullable|string",
-            "type" => "nullable|string|in:Magazine,Article,Event,Khabar,all"
+            'search' => 'nullable|string',
+            'type' => 'nullable|string|in:Magazine,Article,Event,Khabar,all',
         ];
     }
 }

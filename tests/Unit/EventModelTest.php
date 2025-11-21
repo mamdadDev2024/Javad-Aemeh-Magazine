@@ -2,14 +2,13 @@
 
 namespace Tests\Unit;
 
+use App\Models\Category;
+use App\Models\Comment;
 use App\Models\Event;
 use App\Models\User;
-use App\Models\Comment;
-use App\Models\View;
-use App\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class EventModelTest extends TestCase
 {
@@ -18,7 +17,7 @@ class EventModelTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create roles
         Role::create(['name' => 'user']);
         Role::create(['name' => 'admin']);
@@ -28,13 +27,13 @@ class EventModelTest extends TestCase
     public function it_can_create_an_event()
     {
         $user = User::factory()->create();
-        
+
         $event = Event::factory()->create([
             'title' => 'Test Event',
             'slug' => 'test-event',
             'body' => 'This is test event content',
             'image' => 'test-event.jpg',
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
 
         $this->assertDatabaseHas('events', [
@@ -42,16 +41,16 @@ class EventModelTest extends TestCase
             'slug' => 'test-event',
             'body' => 'This is test event content',
             'image' => 'test-event.jpg',
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
     }
 
     /** @test */
     public function it_has_fillable_attributes()
     {
-        $event = new Event();
+        $event = new Event;
         $fillable = ['title', 'body', 'user_id', 'image', 'slug'];
-        
+
         $this->assertEquals($fillable, $event->getFillable());
     }
 
@@ -70,11 +69,11 @@ class EventModelTest extends TestCase
     {
         $user = User::factory()->create();
         $event = Event::factory()->create(['user_id' => $user->id]);
-        
+
         $comment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $event->id,
-            'commentable_type' => Event::class
+            'commentable_type' => Event::class,
         ]);
 
         $this->assertEquals(1, $event->comments()->count());
@@ -86,7 +85,7 @@ class EventModelTest extends TestCase
     {
         $user = User::factory()->create();
         $event = Event::factory()->create(['user_id' => $user->id]);
-        
+
         // Skip this test as views table structure needs to be checked
         $this->assertTrue(method_exists($event, 'views'));
     }
@@ -96,10 +95,10 @@ class EventModelTest extends TestCase
     {
         $user = User::factory()->create();
         $event = Event::factory()->create(['user_id' => $user->id]);
-        
+
         $category1 = Category::factory()->create(['name' => 'Conference']);
         $category2 = Category::factory()->create(['name' => 'Workshop']);
-        
+
         $event->categories()->attach([$category1->id, $category2->id]);
 
         $this->assertEquals(2, $event->categories()->count());
@@ -122,8 +121,8 @@ class EventModelTest extends TestCase
     /** @test */
     public function it_uses_slug_as_route_key()
     {
-        $event = new Event();
-        
+        $event = new Event;
+
         $this->assertEquals('slug', $event->getRouteKeyName());
     }
 
@@ -131,7 +130,7 @@ class EventModelTest extends TestCase
     public function it_has_published_scope()
     {
         $user = User::factory()->create();
-        
+
         // Skip this test as events table doesn't have status column
         $this->assertTrue(method_exists(Event::class, 'scopePublished'));
     }
@@ -140,16 +139,16 @@ class EventModelTest extends TestCase
     public function slug_should_be_unique()
     {
         $user = User::factory()->create();
-        
+
         Event::factory()->create([
             'slug' => 'unique-event',
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
 
         $this->expectException(\Illuminate\Database\QueryException::class);
         Event::factory()->create([
             'slug' => 'unique-event',
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
     }
 
@@ -160,9 +159,9 @@ class EventModelTest extends TestCase
         $event = Event::factory()->create(['user_id' => $user->id]);
 
         $this->assertDatabaseHas('events', ['id' => $event->id]);
-        
+
         $user->delete();
-        
+
         $this->assertDatabaseMissing('events', ['id' => $event->id]);
     }
 
@@ -189,19 +188,19 @@ class EventModelTest extends TestCase
     {
         $user = User::factory()->create();
         $event = Event::factory()->create(['user_id' => $user->id]);
-        
+
         $approvedComment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $event->id,
             'commentable_type' => Event::class,
-            'status' => true
+            'status' => true,
         ]);
-        
+
         $pendingComment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $event->id,
             'commentable_type' => Event::class,
-            'status' => false
+            'status' => false,
         ]);
 
         $this->assertEquals(2, $event->comments()->count());
@@ -215,7 +214,7 @@ class EventModelTest extends TestCase
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
         $event = Event::factory()->create(['user_id' => $user1->id]);
-        
+
         // Skip this test as views table structure needs to be checked
         $this->assertTrue(method_exists($event, 'views'));
     }
@@ -225,11 +224,11 @@ class EventModelTest extends TestCase
     {
         $user = User::factory()->create();
         $event = Event::factory()->create(['user_id' => $user->id]);
-        
+
         $conference = Category::factory()->create(['name' => 'Conference']);
         $workshop = Category::factory()->create(['name' => 'Workshop']);
         $seminar = Category::factory()->create(['name' => 'Seminar']);
-        
+
         $event->categories()->attach([$conference->id, $workshop->id, $seminar->id]);
 
         $this->assertEquals(3, $event->categories()->count());
@@ -243,12 +242,12 @@ class EventModelTest extends TestCase
     public function it_requires_title_body_and_image()
     {
         $user = User::factory()->create();
-        
+
         $event = Event::factory()->create([
             'user_id' => $user->id,
             'title' => 'Required Title',
             'body' => 'Required body content',
-            'image' => 'required-image.jpg'
+            'image' => 'required-image.jpg',
         ]);
 
         $this->assertEquals('Required Title', $event->title);
@@ -280,26 +279,26 @@ class EventModelTest extends TestCase
         $user2 = User::factory()->create();
         $user3 = User::factory()->create();
         $event = Event::factory()->create(['user_id' => $user1->id]);
-        
+
         Comment::factory()->create([
             'user_id' => $user1->id,
             'commentable_id' => $event->id,
             'commentable_type' => Event::class,
-            'body' => 'Comment from user 1'
+            'body' => 'Comment from user 1',
         ]);
-        
+
         Comment::factory()->create([
             'user_id' => $user2->id,
             'commentable_id' => $event->id,
             'commentable_type' => Event::class,
-            'body' => 'Comment from user 2'
+            'body' => 'Comment from user 2',
         ]);
-        
+
         Comment::factory()->create([
             'user_id' => $user3->id,
             'commentable_id' => $event->id,
             'commentable_type' => Event::class,
-            'body' => 'Comment from user 3'
+            'body' => 'Comment from user 3',
         ]);
 
         $this->assertEquals(3, $event->comments()->count());

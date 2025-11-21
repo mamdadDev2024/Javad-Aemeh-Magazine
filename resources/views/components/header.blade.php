@@ -8,7 +8,7 @@
             <img
                 src="{{ asset($section->content) }}"
                 alt="Title Header"
-                class="w-screen max-w-none h-auto object-cover block"
+                class="block w-full max-w-full object-cover"
             >
         </a>
     @endif

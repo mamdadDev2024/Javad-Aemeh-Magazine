@@ -1,4 +1,5 @@
 <?php
+
 namespace App\View\Components;
 
 use Illuminate\View\Component;
@@ -6,8 +7,11 @@ use Illuminate\View\Component;
 class SwiperContainer extends Component
 {
     public $items;
+
     public $type;
+
     public $defaultLink;
+
     public $containerClass;
 
     /**

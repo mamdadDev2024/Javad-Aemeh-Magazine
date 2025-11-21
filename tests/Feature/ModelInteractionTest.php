@@ -2,19 +2,19 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Magazine;
 use App\Models\Article;
+use App\Models\Category;
+use App\Models\Comment;
+use App\Models\Contact;
 use App\Models\Event;
 use App\Models\Khabar;
-use App\Models\Comment;
-use App\Models\Category;
-use App\Models\Scope;
-use App\Models\Contact;
+use App\Models\Magazine;
 use App\Models\Recommend;
+use App\Models\Scope;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class ModelInteractionTest extends TestCase
 {
@@ -23,7 +23,7 @@ class ModelInteractionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create roles
         Role::create(['name' => 'user']);
         Role::create(['name' => 'admin']);
@@ -45,7 +45,7 @@ class ModelInteractionTest extends TestCase
         $magazine = Magazine::factory()->create([
             'user_id' => $writer->id,
             'title' => 'Test Magazine',
-            'slug' => 'test-magazine'
+            'slug' => 'test-magazine',
         ]);
 
         // Attach categories to magazine
@@ -56,14 +56,14 @@ class ModelInteractionTest extends TestCase
             'magazine_id' => $magazine->id,
             'title' => 'Laravel Article',
             'slug' => 'laravel-article',
-            'author' => 'John Doe'
+            'author' => 'John Doe',
         ]);
 
         $article2 = Article::factory()->create([
             'magazine_id' => $magazine->id,
             'title' => 'PHP Article',
             'slug' => 'php-article',
-            'author' => 'Jane Smith'
+            'author' => 'Jane Smith',
         ]);
 
         // Verify relationships
@@ -91,7 +91,7 @@ class ModelInteractionTest extends TestCase
             'user_id' => $reader1->id,
             'commentable_id' => $magazine->id,
             'commentable_type' => Magazine::class,
-            'status' => false
+            'status' => false,
         ]);
 
         $comment2 = Comment::create([
@@ -99,7 +99,7 @@ class ModelInteractionTest extends TestCase
             'user_id' => $reader2->id,
             'commentable_id' => $magazine->id,
             'commentable_type' => Magazine::class,
-            'status' => false
+            'status' => false,
         ]);
 
         $this->assertEquals(2, $magazine->comments()->count());
@@ -128,14 +128,14 @@ class ModelInteractionTest extends TestCase
             'user_id' => $writer->id,
             'scope_id' => $scope->id,
             'title' => 'Important News',
-            'slug' => 'important-news'
+            'slug' => 'important-news',
         ]);
 
         // Create event
         $event = Event::factory()->create([
             'user_id' => $writer->id,
             'title' => 'Tech Conference',
-            'slug' => 'tech-conference'
+            'slug' => 'tech-conference',
         ]);
 
         // Create categories
@@ -195,7 +195,7 @@ class ModelInteractionTest extends TestCase
             'user_id' => $user->id,
             'commentable_id' => $magazine->id,
             'commentable_type' => Magazine::class,
-            'status' => false
+            'status' => false,
         ]);
 
         $this->assertEquals(1, $magazine->comments()->count());
@@ -210,12 +210,12 @@ class ModelInteractionTest extends TestCase
         // Test contact creation
         $contact = Contact::create([
             'body' => 'Test contact message',
-            'phone' => '09123456789'
+            'phone' => '09123456789',
         ]);
 
         $this->assertDatabaseHas('contacts', [
             'body' => 'Test contact message',
-            'phone' => '09123456789'
+            'phone' => '09123456789',
         ]);
 
         // Test recommend creation
@@ -224,12 +224,12 @@ class ModelInteractionTest extends TestCase
             'slug' => 'test-recommendation',
             'pdf' => 'test.pdf',
             'word' => 'test.docx',
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
 
         $this->assertDatabaseHas('recommends', [
             'title' => 'Test Recommendation',
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
 
         $this->assertEquals(1, $user->recommends()->count());
@@ -326,28 +326,28 @@ class ModelInteractionTest extends TestCase
             'body' => 'Comment on magazine',
             'user_id' => $user->id,
             'commentable_id' => $magazine->id,
-            'commentable_type' => Magazine::class
+            'commentable_type' => Magazine::class,
         ]);
 
         $articleComment = Comment::create([
             'body' => 'Comment on article',
             'user_id' => $user->id,
             'commentable_id' => $article->id,
-            'commentable_type' => Article::class
+            'commentable_type' => Article::class,
         ]);
 
         $eventComment = Comment::create([
             'body' => 'Comment on event',
             'user_id' => $user->id,
             'commentable_id' => $event->id,
-            'commentable_type' => Event::class
+            'commentable_type' => Event::class,
         ]);
 
         $newsComment = Comment::create([
             'body' => 'Comment on news',
             'user_id' => $user->id,
             'commentable_id' => $news->id,
-            'commentable_type' => Khabar::class
+            'commentable_type' => Khabar::class,
         ]);
 
         // Verify comment relationships
@@ -379,14 +379,14 @@ class ModelInteractionTest extends TestCase
             'body' => 'Comment 1',
             'user_id' => $user->id,
             'commentable_id' => $magazine->id,
-            'commentable_type' => Magazine::class
+            'commentable_type' => Magazine::class,
         ]);
 
         $comment2 = Comment::create([
             'body' => 'Comment 2',
             'user_id' => $user->id,
             'commentable_id' => $article1->id,
-            'commentable_type' => Article::class
+            'commentable_type' => Article::class,
         ]);
 
         // Verify initial state
@@ -421,19 +421,19 @@ class ModelInteractionTest extends TestCase
         $localNews1 = Khabar::factory()->create([
             'user_id' => $user->id,
             'scope_id' => $localScope->id,
-            'title' => 'Local News 1'
+            'title' => 'Local News 1',
         ]);
 
         $localNews2 = Khabar::factory()->create([
             'user_id' => $user->id,
             'scope_id' => $localScope->id,
-            'title' => 'Local News 2'
+            'title' => 'Local News 2',
         ]);
 
         $internationalNews = Khabar::factory()->create([
             'user_id' => $user->id,
             'scope_id' => $internationalScope->id,
-            'title' => 'International News'
+            'title' => 'International News',
         ]);
 
         // Test scope relationships
@@ -463,26 +463,26 @@ class ModelInteractionTest extends TestCase
 
         // Create magazine and articles
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $article1 = Article::factory()->create([
             'magazine_id' => $magazine->id,
-            'title' => 'AI in Web Development'
+            'title' => 'AI in Web Development',
         ]);
-        
+
         $article2 = Article::factory()->create([
             'magazine_id' => $magazine->id,
-            'title' => 'Pure Technology Article'
+            'title' => 'Pure Technology Article',
         ]);
 
         // Create events and news
         $event = Event::factory()->create([
             'user_id' => $user->id,
-            'title' => 'AI Conference'
+            'title' => 'AI Conference',
         ]);
 
         $news = Khabar::factory()->create([
             'user_id' => $user->id,
-            'title' => 'Web Technology News'
+            'title' => 'Web Technology News',
         ]);
 
         // Attach categories
@@ -560,26 +560,26 @@ class ModelInteractionTest extends TestCase
                 'body' => 'Magazine comment',
                 'user_id' => $user->id,
                 'commentable_id' => $magazine->id,
-                'commentable_type' => Magazine::class
+                'commentable_type' => Magazine::class,
             ]),
             Comment::create([
                 'body' => 'Article comment',
                 'user_id' => $user->id,
                 'commentable_id' => $article->id,
-                'commentable_type' => Article::class
+                'commentable_type' => Article::class,
             ]),
             Comment::create([
                 'body' => 'Event comment',
                 'user_id' => $user->id,
                 'commentable_id' => $event->id,
-                'commentable_type' => Event::class
+                'commentable_type' => Event::class,
             ]),
             Comment::create([
                 'body' => 'News comment',
                 'user_id' => $user->id,
                 'commentable_id' => $news->id,
-                'commentable_type' => Khabar::class
-            ])
+                'commentable_type' => Khabar::class,
+            ]),
         ];
 
         // Test polymorphic relationships

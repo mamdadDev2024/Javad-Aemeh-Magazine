@@ -13,9 +13,9 @@ return [
     */
 
     'previous' => '&laquo; قبلی',
-    'next'     => 'بعدی &raquo;',
-    "Showing"  => "در حال نمایش",
-    "to"       => "تا",
-    "of"       => "از",
-    "results"  => "پاسخ ها"
+    'next' => 'بعدی &raquo;',
+    'Showing' => 'در حال نمایش',
+    'to' => 'تا',
+    'of' => 'از',
+    'results' => 'پاسخ ها',
 ];

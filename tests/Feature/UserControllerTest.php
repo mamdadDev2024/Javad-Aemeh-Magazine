@@ -3,13 +3,12 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use App\Models\Recommend;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Tests\TestCase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class UserControllerTest extends TestCase
 {
@@ -43,7 +42,7 @@ class UserControllerTest extends TestCase
     public function it_can_change_password_with_valid_data()
     {
         $user = User::factory()->create([
-            'password' => Hash::make('oldpassword')
+            'password' => Hash::make('oldpassword'),
         ]);
         $user->assignRole('user');
 
@@ -51,7 +50,7 @@ class UserControllerTest extends TestCase
             'id' => $user->id,
             'current_password' => 'oldpassword',
             'password' => 'newpassword123',
-            'password_confirmation' => 'newpassword123'
+            'password_confirmation' => 'newpassword123',
         ]);
 
         $response->assertRedirect();
@@ -68,7 +67,7 @@ class UserControllerTest extends TestCase
         $response = $this->actingAs($user)->post(route('user.do.change.password'), [
             'id' => $user->id,
             'password' => '123',
-            'password_confirmation' => '456'
+            'password_confirmation' => '456',
         ]);
 
         $response->assertSessionHasErrors(['password']);
@@ -85,7 +84,7 @@ class UserControllerTest extends TestCase
         $response = $this->actingAs($user)->post(route('user.do.change.password'), [
             'id' => $anotherUser->id,
             'password' => 'newpassword123',
-            'password_confirmation' => 'newpassword123'
+            'password_confirmation' => 'newpassword123',
         ]);
 
         $response->assertRedirect();
@@ -110,14 +109,14 @@ class UserControllerTest extends TestCase
     {
         $user = User::factory()->create([
             'name' => 'Old Name',
-            'email' => 'old@example.com'
+            'email' => 'old@example.com',
         ]);
         $user->assignRole('user');
 
         $response = $this->actingAs($user)->post(route('profile'), [
             'name' => 'New Name',
             'email' => 'new@example.com',
-            'number' => '09123456789'
+            'number' => '09123456789',
         ]);
 
         $response->assertRedirect();
@@ -136,7 +135,7 @@ class UserControllerTest extends TestCase
         $file = UploadedFile::fake()->image('avatar.jpg');
 
         $response = $this->actingAs($user)->post(route('profile'), [
-            'image' => $file
+            'image' => $file,
         ]);
 
         $response->assertRedirect();
@@ -171,13 +170,13 @@ class UserControllerTest extends TestCase
             'title' => 'Test Recommendation',
             'pdf' => $pdfFile,
             'word' => $wordFile,
-            'g-recaptcha-response' => 'valid-captcha'
+            'g-recaptcha-response' => 'valid-captcha',
         ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('recommends', [
             'title' => 'Test Recommendation',
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
         Storage::disk('public')->assertExists('attachments/document.pdf');
         Storage::disk('public')->assertExists('attachments/document.docx');
@@ -191,7 +190,7 @@ class UserControllerTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('user.do.suggest'), [
             'title' => '',
-            'g-recaptcha-response' => 'valid-captcha'
+            'g-recaptcha-response' => 'valid-captcha',
         ]);
 
         $response->assertSessionHasErrors(['title', 'pdf']);

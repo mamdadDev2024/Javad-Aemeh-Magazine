@@ -2,17 +2,17 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Magazine;
 use App\Models\Article;
-use App\Models\Comment;
 use App\Models\Category;
+use App\Models\Comment;
+use App\Models\Magazine;
+use App\Models\User;
 use App\Models\View;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Tests\TestCase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class MagazineWorkflowTest extends TestCase
 {
@@ -21,13 +21,13 @@ class MagazineWorkflowTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create roles
         Role::create(['name' => 'user']);
         Role::create(['name' => 'admin']);
         Role::create(['name' => 'writer']);
         Role::create(['name' => 'super admin']);
-        
+
         Storage::fake('public');
     }
 
@@ -39,7 +39,7 @@ class MagazineWorkflowTest extends TestCase
         $reader1 = User::factory()->create(['username' => 'reader1']);
         $reader2 = User::factory()->create(['username' => 'reader2']);
         $admin = User::factory()->create(['username' => 'admin_user']);
-        
+
         $writer->assignRole('writer');
         $reader1->assignRole('user');
         $reader2->assignRole('user');
@@ -66,15 +66,15 @@ class MagazineWorkflowTest extends TestCase
                     'author' => 'John Doe',
                     'abstract' => 'Learn the best practices for Laravel development',
                     'body' => 'This article covers comprehensive Laravel best practices including...',
-                    'addOn' => $articlePdf
+                    'addOn' => $articlePdf,
                 ],
                 [
                     'title' => 'Modern JavaScript Techniques',
                     'author' => 'Jane Smith',
                     'abstract' => 'Explore modern JavaScript development techniques',
-                    'body' => 'Modern JavaScript has evolved significantly with ES6+ features...'
-                ]
-            ]
+                    'body' => 'Modern JavaScript has evolved significantly with ES6+ features...',
+                ],
+            ],
         ]);
 
         $response->assertRedirect(route('home'));
@@ -99,12 +99,12 @@ class MagazineWorkflowTest extends TestCase
         // Step 5: Readers like the magazine
         $this->actingAs($reader1)->post(route('like.toggle', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
 
         $this->actingAs($reader2)->post(route('like.toggle', [
             'type' => 'Magazine',
-            'id' => $magazine->id
+            'id' => $magazine->id,
         ]));
 
         // Verify likes
@@ -115,16 +115,16 @@ class MagazineWorkflowTest extends TestCase
         // Step 6: Readers comment on the magazine
         $this->actingAs($reader1)->post(route('comment.store', [
             'model' => 'Magazine',
-            'contentId' => $magazine->id
+            'contentId' => $magazine->id,
         ]), [
-            'body' => 'Excellent magazine! Very informative content.'
+            'body' => 'Excellent magazine! Very informative content.',
         ]);
 
         $this->actingAs($reader2)->post(route('comment.store', [
             'model' => 'Magazine',
-            'contentId' => $magazine->id
+            'contentId' => $magazine->id,
         ]), [
-            'body' => 'Great articles, especially the Laravel one!'
+            'body' => 'Great articles, especially the Laravel one!',
         ]);
 
         // Verify comments (should be pending approval)
@@ -142,22 +142,22 @@ class MagazineWorkflowTest extends TestCase
 
         // Step 8: Readers view and interact with articles
         $article = $magazine->articles()->first();
-        
+
         $articleResponse = $this->actingAs($reader1)->get(route('article.show', $article->slug));
         $articleResponse->assertStatus(200);
 
         // Like the article
         $this->actingAs($reader1)->post(route('like.toggle', [
             'type' => 'article',
-            'id' => $article->id
+            'id' => $article->id,
         ]));
 
         // Comment on the article
         $this->actingAs($reader1)->post(route('comment.store', [
             'model' => 'Article',
-            'contentId' => $article->id
+            'contentId' => $article->id,
         ]), [
-            'body' => 'This Laravel article is exactly what I needed!'
+            'body' => 'This Laravel article is exactly what I needed!',
         ]);
 
         // Verify article interactions
@@ -168,7 +168,7 @@ class MagazineWorkflowTest extends TestCase
         // Step 9: Search functionality
         $searchResponse = $this->get(route('search', [
             'search' => 'Laravel',
-            'type' => 'all'
+            'type' => 'all',
         ]));
 
         $searchResponse->assertStatus(200);
@@ -176,7 +176,7 @@ class MagazineWorkflowTest extends TestCase
         $this->assertGreaterThan(0, $results->total());
 
         // Step 10: Category filtering
-        $techArticles = Article::whereHas('categories', function($query) use ($techCategory) {
+        $techArticles = Article::whereHas('categories', function ($query) use ($techCategory) {
             $query->where('categories.id', $techCategory->id);
         })->get();
 
@@ -184,7 +184,7 @@ class MagazineWorkflowTest extends TestCase
 
         // Step 11: Writer updates the magazine
         $newImageFile = UploadedFile::fake()->image('updated_magazine.jpg');
-        
+
         $updateResponse = $this->actingAs($writer)->post(route('writer.magazine.update'), [
             'id' => $magazine->id,
             'title' => 'Advanced Programming Magazine - Updated',
@@ -196,9 +196,9 @@ class MagazineWorkflowTest extends TestCase
                     'title' => 'Laravel Best Practices - Updated',
                     'author' => 'John Doe',
                     'abstract' => 'Updated abstract with more details',
-                    'body' => 'Updated article content with latest practices...'
-                ]
-            ]
+                    'body' => 'Updated article content with latest practices...',
+                ],
+            ],
         ]);
 
         $updateResponse->assertRedirect(route('home'));
@@ -237,7 +237,7 @@ class MagazineWorkflowTest extends TestCase
         // Create magazine with all categories
         $magazine = Magazine::factory()->create([
             'user_id' => $writer->id,
-            'title' => 'Multi-Category Magazine'
+            'title' => 'Multi-Category Magazine',
         ]);
 
         $magazine->categories()->attach(collect($categories)->pluck('id')->toArray());
@@ -245,13 +245,13 @@ class MagazineWorkflowTest extends TestCase
         // Create multiple articles with different category combinations
         $article1 = Article::factory()->create([
             'magazine_id' => $magazine->id,
-            'title' => 'Tech Innovation Article'
+            'title' => 'Tech Innovation Article',
         ]);
         $article1->categories()->attach([$categories[0]->id, $categories[4]->id]); // Tech + Innovation
 
         $article2 = Article::factory()->create([
             'magazine_id' => $magazine->id,
-            'title' => 'Science Education Article'
+            'title' => 'Science Education Article',
         ]);
         $article2->categories()->attach([$categories[1]->id, $categories[2]->id]); // Science + Education
 
@@ -270,16 +270,16 @@ class MagazineWorkflowTest extends TestCase
             if ($index % 2 === 0) {
                 $this->actingAs($user)->post(route('like.toggle', [
                     'type' => 'Magazine',
-                    'id' => $magazine->id
+                    'id' => $magazine->id,
                 ]));
             }
 
             // Users comment with different patterns
             $this->actingAs($user)->post(route('comment.store', [
                 'model' => 'Magazine',
-                'contentId' => $magazine->id
+                'contentId' => $magazine->id,
             ]), [
-                'body' => "Comment from user {$index}: This magazine covers great topics!"
+                'body' => "Comment from user {$index}: This magazine covers great topics!",
             ]);
 
             // Users interact with articles differently
@@ -287,7 +287,7 @@ class MagazineWorkflowTest extends TestCase
                 $this->actingAs($user)->get(route('article.show', $article1->slug));
                 $this->actingAs($user)->post(route('like.toggle', [
                     'type' => 'article',
-                    'id' => $article1->id
+                    'id' => $article1->id,
                 ]));
             }
 
@@ -295,9 +295,9 @@ class MagazineWorkflowTest extends TestCase
                 $this->actingAs($user)->get(route('article.show', $article2->slug));
                 $this->actingAs($user)->post(route('comment.store', [
                     'model' => 'Article',
-                    'contentId' => $article2->id
+                    'contentId' => $article2->id,
                 ]), [
-                    'body' => "Article comment from user {$index}"
+                    'body' => "Article comment from user {$index}",
                 ]);
             }
         }
@@ -314,7 +314,7 @@ class MagazineWorkflowTest extends TestCase
         $this->assertEquals(3, $article2->comments()->count());
 
         // Test category-based filtering
-        $techMagazines = Magazine::whereHas('categories', function($query) use ($categories) {
+        $techMagazines = Magazine::whereHas('categories', function ($query) use ($categories) {
             $query->where('categories.id', $categories[0]->id); // Technology
         })->get();
 
@@ -322,7 +322,7 @@ class MagazineWorkflowTest extends TestCase
         $this->assertTrue($techMagazines->contains($magazine));
 
         // Test multi-category search
-        $techAndScienceMagazines = Magazine::whereHas('categories', function($query) use ($categories) {
+        $techAndScienceMagazines = Magazine::whereHas('categories', function ($query) use ($categories) {
             $query->whereIn('categories.id', [$categories[0]->id, $categories[1]->id]);
         })->get();
 
@@ -345,7 +345,7 @@ class MagazineWorkflowTest extends TestCase
         // Writer creates magazine
         $magazine = Magazine::factory()->create([
             'user_id' => $writer->id,
-            'title' => 'Permission Test Magazine'
+            'title' => 'Permission Test Magazine',
         ]);
 
         // Test access permissions
@@ -361,9 +361,9 @@ class MagazineWorkflowTest extends TestCase
         // Test comment approval workflow
         $this->actingAs($user)->post(route('comment.store', [
             'model' => 'Magazine',
-            'contentId' => $magazine->id
+            'contentId' => $magazine->id,
         ]), [
-            'body' => 'Test comment for approval'
+            'body' => 'Test comment for approval',
         ]);
 
         $comment = Comment::where('body', 'Test comment for approval')->first();
@@ -371,16 +371,16 @@ class MagazineWorkflowTest extends TestCase
 
         // Admin approves comment
         $this->actingAs($admin)->post(route('admin.comment.approve', $comment->id));
-        
+
         $this->assertTrue($comment->fresh()->status);
 
         // Test bulk comment approval
         for ($i = 1; $i <= 3; $i++) {
             $this->actingAs($user)->post(route('comment.store', [
                 'model' => 'Magazine',
-                'contentId' => $magazine->id
+                'contentId' => $magazine->id,
             ]), [
-                'body' => "Bulk comment {$i}"
+                'body' => "Bulk comment {$i}",
             ]);
         }
 

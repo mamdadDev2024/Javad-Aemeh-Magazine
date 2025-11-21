@@ -9,16 +9,16 @@ use Overtrue\LaravelLike\Traits\Likeable;
 
 class Article extends Model
 {
-    use HasFactory, Likeable , HasSlug;
+    use HasFactory, HasSlug , Likeable;
 
     protected $fillable = [
         'title',
         'body',
         'author',
         'abstract',
-        "slug",
+        'slug',
         'magazine_id',
-        "url"
+        'url',
     ];
 
     public function magazine()

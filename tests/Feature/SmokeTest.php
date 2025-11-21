@@ -2,10 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Magazine;
-use App\Models\Khabar;
-use App\Models\Event;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
@@ -53,5 +49,3 @@ class SmokeTest extends TestCase
         $this->get(route('reset'))->assertStatus(302); // requires session id
     }
 }
-
-

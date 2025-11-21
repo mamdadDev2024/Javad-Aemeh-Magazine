@@ -2,15 +2,15 @@
 
 namespace Tests\Unit;
 
-use App\Models\Category;
 use App\Models\Article;
+use App\Models\Category;
 use App\Models\Event;
 use App\Models\Khabar;
 use App\Models\Magazine;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class CategoryModelTest extends TestCase
 {
@@ -19,7 +19,7 @@ class CategoryModelTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create roles
         Role::create(['name' => 'user']);
         Role::create(['name' => 'admin']);
@@ -29,20 +29,20 @@ class CategoryModelTest extends TestCase
     public function it_can_create_a_category()
     {
         $category = Category::factory()->create([
-            'name' => 'Technology'
+            'name' => 'Technology',
         ]);
 
         $this->assertDatabaseHas('categories', [
-            'name' => 'Technology'
+            'name' => 'Technology',
         ]);
     }
 
     /** @test */
     public function it_has_fillable_attributes()
     {
-        $category = new Category();
+        $category = new Category;
         $fillable = ['name'];
-        
+
         $this->assertEquals($fillable, $category->getFillable());
     }
 
@@ -52,10 +52,10 @@ class CategoryModelTest extends TestCase
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
         $category = Category::factory()->create(['name' => 'Technology']);
-        
+
         $article1 = Article::factory()->create(['magazine_id' => $magazine->id]);
         $article2 = Article::factory()->create(['magazine_id' => $magazine->id]);
-        
+
         $category->articles()->attach([$article1->id, $article2->id]);
 
         $this->assertEquals(2, $category->articles()->count());
@@ -68,10 +68,10 @@ class CategoryModelTest extends TestCase
     {
         $user = User::factory()->create();
         $category = Category::factory()->create(['name' => 'Conference']);
-        
+
         $event1 = Event::factory()->create(['user_id' => $user->id]);
         $event2 = Event::factory()->create(['user_id' => $user->id]);
-        
+
         $category->events()->attach([$event1->id, $event2->id]);
 
         $this->assertEquals(2, $category->events()->count());
@@ -84,10 +84,10 @@ class CategoryModelTest extends TestCase
     {
         $user = User::factory()->create();
         $category = Category::factory()->create(['name' => 'Politics']);
-        
+
         $news1 = Khabar::factory()->create(['user_id' => $user->id]);
         $news2 = Khabar::factory()->create(['user_id' => $user->id]);
-        
+
         $category->news()->attach([$news1->id, $news2->id]);
 
         $this->assertEquals(2, $category->news()->count());
@@ -100,10 +100,10 @@ class CategoryModelTest extends TestCase
     {
         $user = User::factory()->create();
         $category = Category::factory()->create(['name' => 'Science']);
-        
+
         $magazine1 = Magazine::factory()->create(['user_id' => $user->id]);
         $magazine2 = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $category->magazines()->attach([$magazine1->id, $magazine2->id]);
 
         $this->assertEquals(2, $category->magazines()->count());
@@ -117,12 +117,12 @@ class CategoryModelTest extends TestCase
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
         $category = Category::factory()->create(['name' => 'Technology']);
-        
+
         $article = Article::factory()->create(['magazine_id' => $magazine->id]);
         $event = Event::factory()->create(['user_id' => $user->id]);
         $news = Khabar::factory()->create(['user_id' => $user->id]);
         $magazineItem = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $category->articles()->attach($article->id);
         $category->events()->attach($event->id);
         $category->news()->attach($news->id);
@@ -140,20 +140,20 @@ class CategoryModelTest extends TestCase
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
         $category = Category::factory()->create(['name' => 'Technology']);
-        
+
         $article1 = Article::factory()->create([
             'magazine_id' => $magazine->id,
-            'title' => 'AI Technology'
+            'title' => 'AI Technology',
         ]);
         $article2 = Article::factory()->create([
             'magazine_id' => $magazine->id,
-            'title' => 'Blockchain Technology'
+            'title' => 'Blockchain Technology',
         ]);
         $article3 = Article::factory()->create([
             'magazine_id' => $magazine->id,
-            'title' => 'IoT Technology'
+            'title' => 'IoT Technology',
         ]);
-        
+
         $category->articles()->attach([$article1->id, $article2->id, $article3->id]);
 
         $this->assertEquals(3, $category->articles()->count());
@@ -170,12 +170,12 @@ class CategoryModelTest extends TestCase
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
         $category = Category::factory()->create(['name' => 'Technology']);
         $article = Article::factory()->create(['magazine_id' => $magazine->id]);
-        
+
         // Attach
         $category->articles()->attach($article->id);
         $this->assertEquals(1, $category->articles()->count());
         $this->assertTrue($category->articles->contains($article));
-        
+
         // Detach
         $category->articles()->detach($article->id);
         $this->assertEquals(0, $category->articles()->count());
@@ -190,15 +190,15 @@ class CategoryModelTest extends TestCase
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
         $category = Category::factory()->create(['name' => 'Technology']);
-        
+
         $article1 = Article::factory()->create(['magazine_id' => $magazine->id]);
         $article2 = Article::factory()->create(['magazine_id' => $magazine->id]);
         $article3 = Article::factory()->create(['magazine_id' => $magazine->id]);
-        
+
         // Initial sync
         $category->articles()->sync([$article1->id, $article2->id]);
         $this->assertEquals(2, $category->articles()->count());
-        
+
         // Sync with different articles
         $category->articles()->sync([$article2->id, $article3->id]);
         $this->assertEquals(2, $category->articles()->count());
@@ -221,21 +221,21 @@ class CategoryModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $techCategory = Category::factory()->create(['name' => 'Technology']);
         $scienceCategory = Category::factory()->create(['name' => 'Science']);
-        
+
         $techArticle = Article::factory()->create(['magazine_id' => $magazine->id]);
         $scienceArticle = Article::factory()->create(['magazine_id' => $magazine->id]);
-        
+
         $techCategory->articles()->attach($techArticle->id);
         $scienceCategory->articles()->attach($scienceArticle->id);
 
-        $techArticles = Article::whereHas('categories', function($query) use ($techCategory) {
+        $techArticles = Article::whereHas('categories', function ($query) use ($techCategory) {
             $query->where('categories.id', $techCategory->id);
         })->get();
-        
-        $scienceArticles = Article::whereHas('categories', function($query) use ($scienceCategory) {
+
+        $scienceArticles = Article::whereHas('categories', function ($query) use ($scienceCategory) {
             $query->where('categories.id', $scienceCategory->id);
         })->get();
 
@@ -250,17 +250,17 @@ class CategoryModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $techCategory = Category::factory()->create(['name' => 'Technology']);
         $aiCategory = Category::factory()->create(['name' => 'Artificial Intelligence']);
         $researchCategory = Category::factory()->create(['name' => 'Research']);
-        
+
         $article = Article::factory()->create(['magazine_id' => $magazine->id]);
-        
+
         $article->categories()->attach([
             $techCategory->id,
             $aiCategory->id,
-            $researchCategory->id
+            $researchCategory->id,
         ]);
 
         $this->assertEquals(3, $article->categories()->count());
@@ -276,12 +276,12 @@ class CategoryModelTest extends TestCase
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
         $category = Category::factory()->create(['name' => 'Technology']);
         $article = Article::factory()->create(['magazine_id' => $magazine->id]);
-        
+
         $category->articles()->attach($article->id);
         $this->assertEquals(1, $category->articles()->count());
-        
+
         $article->delete();
-        
+
         // Category should still exist but with no articles
         $this->assertEquals(0, $category->fresh()->articles()->count());
         $this->assertDatabaseHas('categories', ['id' => $category->id]);
@@ -292,18 +292,18 @@ class CategoryModelTest extends TestCase
     {
         $user = User::factory()->create();
         $magazine = Magazine::factory()->create(['user_id' => $user->id]);
-        
+
         $techCategory = Category::factory()->create(['name' => 'Technology']);
         $scienceCategory = Category::factory()->create(['name' => 'Science']);
-        
+
         // Create multiple articles for tech category
         $techArticle1 = Article::factory()->create(['magazine_id' => $magazine->id]);
         $techArticle2 = Article::factory()->create(['magazine_id' => $magazine->id]);
         $techArticle3 = Article::factory()->create(['magazine_id' => $magazine->id]);
-        
+
         // Create one article for science category
         $scienceArticle = Article::factory()->create(['magazine_id' => $magazine->id]);
-        
+
         $techCategory->articles()->attach([$techArticle1->id, $techArticle2->id, $techArticle3->id]);
         $scienceCategory->articles()->attach($scienceArticle->id);
 

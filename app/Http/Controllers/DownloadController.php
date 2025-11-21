@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DownloadRequest;
 use Devrabiul\ToastMagic\Facades\ToastMagic;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -22,12 +21,14 @@ class DownloadController extends Controller
                 }
             }
 
-            ToastMagic::error("انجام نشد", "فایل موجود نیست");
+            ToastMagic::error('انجام نشد', 'فایل موجود نیست');
+
             return back();
 
         } catch (\Exception $e) {
-            Log::error('Download error: ' . $e->getMessage());
-            ToastMagic::error("انجام نشد", "مشکلی در فرآیند بارگیری پیش آمد");
+            Log::error('Download error: '.$e->getMessage());
+            ToastMagic::error('انجام نشد', 'مشکلی در فرآیند بارگیری پیش آمد');
+
             return back();
         }
     }

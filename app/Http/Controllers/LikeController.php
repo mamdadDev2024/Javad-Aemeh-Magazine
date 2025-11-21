@@ -16,21 +16,23 @@ class LikeController extends Controller
     {
         try {
             $user = Auth::user();
-            if (!$user) {
-                ToastMagic::success("احراز هویت", "اول وارد حساب شوید");
+            if (! $user) {
+                ToastMagic::success('احراز هویت', 'اول وارد حساب شوید');
+
                 return back();
             }
 
             $model = match ($type) {
-                "Magazine" => Magazine::class,
+                'Magazine' => Magazine::class,
                 'article' => Article::class,
                 'khabar' => Khabar::class,
                 'event' => Event::class,
                 default => null
             };
 
-            if (!$model) {
-                ToastMagic::error("خطا", "نوع محتوا نامعتبر است");
+            if (! $model) {
+                ToastMagic::error('خطا', 'نوع محتوا نامعتبر است');
+
                 return back();
             }
 
@@ -38,19 +40,22 @@ class LikeController extends Controller
             $likeToggled = $user->toggleLike($content);
 
             $message = $likeToggled
-                ? "با موفقیت انجام شد"
-                : "لایک شما حذف شد";
+                ? 'با موفقیت انجام شد'
+                : 'لایک شما حذف شد';
 
-            ToastMagic::success("انجام شد", $message);
+            ToastMagic::success('انجام شد', $message);
+
             return back();
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            ToastMagic::error("خطا", "محتوای مورد نظر یافت نشد");
+            ToastMagic::error('خطا', 'محتوای مورد نظر یافت نشد');
+
             return back();
 
         } catch (\Throwable $th) {
-            Log::error("Error in toggleLike for {$type}: " . $th->getMessage());
-            ToastMagic::error("خطا", "مشکلی در پردازش درخواست شما رخ داد");
+            Log::error("Error in toggleLike for {$type}: ".$th->getMessage());
+            ToastMagic::error('خطا', 'مشکلی در پردازش درخواست شما رخ داد');
+
             return back();
 
         }

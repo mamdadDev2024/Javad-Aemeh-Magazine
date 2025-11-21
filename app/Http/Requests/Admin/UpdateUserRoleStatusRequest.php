@@ -23,7 +23,7 @@ class UpdateUserRoleStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'g-recaptcha-response' => "required|captcha",
+            'g-recaptcha-response' => 'required|captcha',
             'statuses' => 'required|array',
             'statuses.*' => 'required|in:0,1',
             'roles' => 'required|array',

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Magazine>
  */
@@ -17,6 +18,7 @@ class MagazineFactory extends Factory
     public function definition(): array
     {
         $title = fake()->sentence();
+
         return [
             'title' => $title,
             'body' => fake()->text(100),

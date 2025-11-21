@@ -2,15 +2,14 @@
 
 namespace Tests\Unit;
 
-use App\Models\Khabar;
-use App\Models\User;
-use App\Models\Scope;
-use App\Models\Comment;
-use App\Models\View;
 use App\Models\Category;
+use App\Models\Comment;
+use App\Models\Khabar;
+use App\Models\Scope;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class KhabarModelTest extends TestCase
 {
@@ -19,7 +18,7 @@ class KhabarModelTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create roles
         Role::create(['name' => 'user']);
         Role::create(['name' => 'admin']);
@@ -30,13 +29,13 @@ class KhabarModelTest extends TestCase
     {
         $user = User::factory()->create();
         $scope = Scope::factory()->create();
-        
+
         $khabar = Khabar::factory()->create([
             'title' => 'Test News',
             'slug' => 'test-news',
             'body' => 'This is test news content',
             'user_id' => $user->id,
-            'scope_id' => $scope->id
+            'scope_id' => $scope->id,
         ]);
 
         $this->assertDatabaseHas('khabars', [
@@ -44,16 +43,16 @@ class KhabarModelTest extends TestCase
             'slug' => 'test-news',
             'body' => 'This is test news content',
             'user_id' => $user->id,
-            'scope_id' => $scope->id
+            'scope_id' => $scope->id,
         ]);
     }
 
     /** @test */
     public function it_has_fillable_attributes()
     {
-        $khabar = new Khabar();
+        $khabar = new Khabar;
         $fillable = ['title', 'body', 'user_id', 'image', 'pdf', 'scope_id', 'slug'];
-        
+
         $this->assertEquals($fillable, $khabar->getFillable());
     }
 
@@ -74,7 +73,7 @@ class KhabarModelTest extends TestCase
         $scope = Scope::factory()->create();
         $khabar = Khabar::factory()->create([
             'user_id' => $user->id,
-            'scope_id' => $scope->id
+            'scope_id' => $scope->id,
         ]);
 
         $this->assertInstanceOf(Scope::class, $khabar->scope);
@@ -87,7 +86,7 @@ class KhabarModelTest extends TestCase
         $user = User::factory()->create();
         $khabar = Khabar::factory()->create([
             'user_id' => $user->id,
-            'scope_id' => null
+            'scope_id' => null,
         ]);
 
         $this->assertNull($khabar->scope);
@@ -98,11 +97,11 @@ class KhabarModelTest extends TestCase
     {
         $user = User::factory()->create();
         $khabar = Khabar::factory()->create(['user_id' => $user->id]);
-        
+
         $comment = Comment::factory()->create([
             'user_id' => $user->id,
             'commentable_id' => $khabar->id,
-            'commentable_type' => Khabar::class
+            'commentable_type' => Khabar::class,
         ]);
 
         $this->assertEquals(1, $khabar->comments()->count());
@@ -114,7 +113,7 @@ class KhabarModelTest extends TestCase
     {
         $user = User::factory()->create();
         $khabar = Khabar::factory()->create(['user_id' => $user->id]);
-        
+
         // Skip this test as views table structure needs to be checked
         $this->assertTrue(method_exists($khabar, 'views'));
     }
@@ -124,10 +123,10 @@ class KhabarModelTest extends TestCase
     {
         $user = User::factory()->create();
         $khabar = Khabar::factory()->create(['user_id' => $user->id]);
-        
+
         $category1 = Category::factory()->create(['name' => 'Politics']);
         $category2 = Category::factory()->create(['name' => 'Economy']);
-        
+
         $khabar->categories()->attach([$category1->id, $category2->id]);
 
         $this->assertEquals(2, $khabar->categories()->count());
@@ -150,8 +149,8 @@ class KhabarModelTest extends TestCase
     /** @test */
     public function it_uses_slug_as_route_key()
     {
-        $khabar = new Khabar();
-        
+        $khabar = new Khabar;
+
         $this->assertEquals('slug', $khabar->getRouteKeyName());
     }
 
@@ -159,7 +158,7 @@ class KhabarModelTest extends TestCase
     public function it_has_published_scope()
     {
         $user = User::factory()->create();
-        
+
         // Skip this test as khabars table doesn't have status column
         $this->assertTrue(method_exists(Khabar::class, 'scopePublished'));
     }
@@ -168,16 +167,16 @@ class KhabarModelTest extends TestCase
     public function slug_should_be_unique()
     {
         $user = User::factory()->create();
-        
+
         Khabar::factory()->create([
             'slug' => 'unique-news',
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
 
         $this->expectException(\Illuminate\Database\QueryException::class);
         Khabar::factory()->create([
             'slug' => 'unique-news',
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
     }
 
@@ -185,15 +184,15 @@ class KhabarModelTest extends TestCase
     public function it_can_have_optional_pdf_attachment()
     {
         $user = User::factory()->create();
-        
+
         $khabarWithPdf = Khabar::factory()->create([
             'user_id' => $user->id,
-            'pdf' => 'attachments/news.pdf'
+            'pdf' => 'attachments/news.pdf',
         ]);
-        
+
         $khabarWithoutPdf = Khabar::factory()->create([
             'user_id' => $user->id,
-            'pdf' => null
+            'pdf' => null,
         ]);
 
         $this->assertEquals('attachments/news.pdf', $khabarWithPdf->pdf);
@@ -207,9 +206,9 @@ class KhabarModelTest extends TestCase
         $khabar = Khabar::factory()->create(['user_id' => $user->id]);
 
         $this->assertDatabaseHas('khabars', ['id' => $khabar->id]);
-        
+
         $user->delete();
-        
+
         $this->assertDatabaseMissing('khabars', ['id' => $khabar->id]);
     }
 
@@ -220,13 +219,13 @@ class KhabarModelTest extends TestCase
         $scope = Scope::factory()->create();
         $khabar = Khabar::factory()->create([
             'user_id' => $user->id,
-            'scope_id' => $scope->id
+            'scope_id' => $scope->id,
         ]);
 
         $this->assertDatabaseHas('khabars', ['id' => $khabar->id]);
-        
+
         $scope->delete();
-        
+
         $this->assertDatabaseMissing('khabars', ['id' => $khabar->id]);
     }
 
@@ -236,15 +235,15 @@ class KhabarModelTest extends TestCase
         $user = User::factory()->create();
         $scope1 = Scope::factory()->create(['name' => 'Local']);
         $scope2 = Scope::factory()->create(['name' => 'International']);
-        
+
         $localNews = Khabar::factory()->create([
             'user_id' => $user->id,
-            'scope_id' => $scope1->id
+            'scope_id' => $scope1->id,
         ]);
-        
+
         $internationalNews = Khabar::factory()->create([
             'user_id' => $user->id,
-            'scope_id' => $scope2->id
+            'scope_id' => $scope2->id,
         ]);
 
         $localNewsFromDb = Khabar::where('scope_id', $scope1->id)->get();
@@ -260,12 +259,12 @@ class KhabarModelTest extends TestCase
     public function it_requires_title_body_and_image()
     {
         $user = User::factory()->create();
-        
+
         $khabar = Khabar::factory()->create([
             'user_id' => $user->id,
             'title' => 'Required Title',
             'body' => 'Required body content',
-            'image' => 'required-image.jpg'
+            'image' => 'required-image.jpg',
         ]);
 
         $this->assertEquals('Required Title', $khabar->title);
